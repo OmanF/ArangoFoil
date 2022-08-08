@@ -1,4 +1,4 @@
-# ArangoDB .Net driver (thin) wrapper for F# #
+# ArangoF#oil - ArangoDB .Net driver (thin) wrapper for F# #
 
 [ArangoDB](https://www.arangodb.com/) has an [official .Net driver](https://github.com/ArangoDB-Community/arangodb-net-standard), however as most things ".Net", it really means C#.
 Luckily, it's easy enough to provide a (thin) wrapper around that driver making it easy to call from F# code.
@@ -15,3 +15,7 @@ While the parameterized flavor is more idiomatic, supporting referntial transper
 ## Usage ##
 
 The easiest way to use this library is to copy and/or install the code and its dependencies, i.e. `ArangoDBNetStandard`, as files in your own projects and call it like any other project's file. Otherwise, just build the package and reference the resulting ".dll" file.
+
+## The name? ##
+
+(Tin)foil can be used to wrap materials. F#oil wraps .Net materials into something usable by F#. :smile:
