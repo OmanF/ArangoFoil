@@ -3,14 +3,21 @@
 [ArangoDB](https://www.arangodb.com/) has an [official .Net driver](https://github.com/ArangoDB-Community/arangodb-net-standard), however as most things ".Net", it really means C#.
 Luckily, it's easy enough to provide a (thin) wrapper around that driver making it easy to call from F# code.
 
-## Parameterized versus mutable variables ##
+## Mutable variables usage ##
 
-The wrapper comes in two "flavors":
+The official driver recommends having only a single `HttpApiTransport` (and therefore `ArangoDBClient`) for the entire life-cycle of the entire application. That means refraining from using the keyword `use` with them, by which they will be disposed (both implementing the `IDisposable` interface) once out of scope.
 
-* Each call is supplied with **all** the connection parameters.
-* The connection parameters are set globally as **mutable** variables that are accessible to all functions.
+This behavior lends itself nicely to a flow based on **mutable, global** variables holding the database connection details: the connection string (URL), username, password, and the actual database to connect to.
 
-While the parameterized flavor is more idiomatic, supporting referntial transperancy, it's **extremely** verbose. The global mutable variables seems more correct to the flow of this library: we set the connection details as global variables once, do what we need to setup the ArangoDB, then we will set the details again, thanks to their mutablity, and act on the actual database and collections. If, later, we need, for some reason, to switch database/collection, we can!
+The flow then goes along the lines of:
+
+* Initialize the variables with some value, likely representing the root user's credentials and the `_system` database (which is the only usecase for creating new databases!)
+* Create said databases.
+* Set the global variables to the new database's details.
+* Do work on the database.
+* If the need for another database arises, switching back to the `_system` database, and then to any other database later is as easy as setting a mutable global variable.
+
+Alternatively, just call the database creating function with the variables verbatim, e.g. `dbCreate "http://localhost:8529" "rootUser" "rootPass" "_system"`, switching the variables each time a change is required. I just like the mutable variable approach better.
 
 ## Usage ##
 
