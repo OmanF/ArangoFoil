@@ -5,45 +5,51 @@ open ArangoDBNetStandard.DatabaseApi.Models
 open System
 open ConnectionDetails
 
-let getCurrentDBInfo () =
+let getCurrentDatabaseInfoAsync () =
     try
-        let response =
-            db
-                .Database
-                .GetCurrentDatabaseInfoAsync()
-                .GetAwaiter()
-                .GetResult()
+        Ok
+        <| db
+            .Database
+            .GetCurrentDatabaseInfoAsync()
+            .GetAwaiter()
+            .GetResult()
 
-        Ok response
     with
     | :? Net.Http.HttpRequestException
     | :? ApiErrorException
     | :? UriFormatException as ex -> Error ex
 
-let getAllDBs () =
+let getDatabasesAsync () =
     try
-        let response =
-            db
-                .Database
-                .GetDatabasesAsync()
-                .GetAwaiter()
-                .GetResult()
+        Ok
+        <| db
+            .Database
+            .GetDatabasesAsync()
+            .GetAwaiter()
+            .GetResult()
 
-        Ok response
     with
     | :? Net.Http.HttpRequestException
     | :? ApiErrorException
     | :? UriFormatException as ex -> Error ex
 
-let setupDBUserCreds username password active =
-    new DatabaseUser(Username = username, Passwd = password, Active = active)
-
-let setupNewDB dbName users =
-    new PostDatabaseBody(Name = dbName, Users = users)
-
-let createDB (newDBName: string) (newDBUsers: seq<DatabaseUser>) =
+let getUserDatabaseAsync () =
     try
-        let body = new PostDatabaseBody(Name = newDBName, Users = newDBUsers)
+        Ok
+        <| db
+            .Database
+            .GetUserDatabasesAsync()
+            .GetAwaiter()
+            .GetResult()
+
+    with
+    | :? Net.Http.HttpRequestException
+    | :? ApiErrorException
+    | :? UriFormatException as ex -> Error ex
+
+let createDatabaseAsync newDatabaseName newDatabaseUsers =
+    try
+        let body = new PostDatabaseBody(Name = newDatabaseName, Users = newDatabaseUsers)
 
         Ok
         <| db
@@ -57,7 +63,7 @@ let createDB (newDBName: string) (newDBUsers: seq<DatabaseUser>) =
     | :? UriFormatException as ex -> Error ex
 
 
-let deleteDB (dbToDelete: string) =
+let deleteDatabaseAsync dbToDelete =
     try
         Ok
         <| db

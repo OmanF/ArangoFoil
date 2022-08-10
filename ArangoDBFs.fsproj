@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="connectionDetails.fs" />
     <Compile Include="databases.fs" />
+    <Compile Include="collections.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

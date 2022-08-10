@@ -19,6 +19,8 @@ The flow then proceeds as following:
 * Continue working on the new database using the non-root user.
 * (If another new database/user is required, repeat flow as necessary).
 
+(Yes, I know, `state` monad, some other custom CE, or even referential-transparent function to create the connection... thing is I don't know how to implement the `state` monad, let alone a custom CE, and between referntial-transparent function and mutable variable, **for this specific use-case**, mutable variables felt more correct. Don't know why, just did.)
+
 ## Usage ##
 
 The easiest way to use this library is to copy the code files into your own projects, not forgetting to reference them in the `.fsproj` file, nor to install their dependency, i.e., the `DBNetStandard` nuget, and treat them like any other project's file/modules.
