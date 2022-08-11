@@ -57,6 +57,7 @@ let createDatabaseAsync newDatabaseName newDatabaseUsers =
             .PostDatabaseAsync(body)
             .GetAwaiter()
             .GetResult()
+
     with
     | :? Net.Http.HttpRequestException
     | :? ApiErrorException
@@ -71,6 +72,7 @@ let deleteDatabaseAsync dbToDelete =
             .DeleteDatabaseAsync(dbToDelete)
             .GetAwaiter()
             .GetResult()
+
     with
     | :? Net.Http.HttpRequestException
     | :? ApiErrorException

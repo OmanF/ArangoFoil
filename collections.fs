@@ -50,6 +50,7 @@ let createCollectionAsync collectionName collectionType =
             .PostCollectionAsync(body)
             .GetAwaiter()
             .GetResult()
+
     with
     | :? Net.Http.HttpRequestException
     | :? ApiErrorException
@@ -63,6 +64,7 @@ let renameCollectionAsync currentCollection newCollectionName =
             .RenameCollectionAsync(currentCollection, RenameCollectionBody(Name = newCollectionName))
             .GetAwaiter()
             .GetResult()
+
     with
     | :? Net.Http.HttpRequestException
     | :? ApiErrorException
@@ -78,6 +80,7 @@ let truncateCollectionAsync collectionName =
             )
             .GetAwaiter()
             .GetResult
+
     with
     | :? Net.Http.HttpRequestException
     | :? ApiErrorException
@@ -93,6 +96,7 @@ let deleteCollectionAsync collectionName =
             )
             .GetAwaiter()
             .GetResult
+
     with
     | :? Net.Http.HttpRequestException
     | :? ApiErrorException
