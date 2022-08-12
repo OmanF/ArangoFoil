@@ -9,8 +9,12 @@
     <Compile Include="connectionDetails.fs" />
     <Compile Include="databases.fs" />
     <Compile Include="collections.fs" />
+    <Compile Include="documents.fs" />
     <Compile Include="users.fs" />
-    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ArangoDBNetStandard" Version="1.1.1" />
   </ItemGroup>
 
 </Project>
