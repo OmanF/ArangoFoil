@@ -1,20 +1,18 @@
 module ConnectionDetails
 
+open System
 open ArangoDBNetStandard
 open ArangoDBNetStandard.Transport.Http
-open System
 
-// Default values: root user on the `_system` database, running on a local Docker-hosted instance
-let mutable url = "http://localhost:8529"
-let mutable username = "root"
-let mutable password = "openSesame"
-let mutable dbName = "_system"
+open type Transport.Http.HttpApiTransport
 
 let mutable dbTransport =
-    HttpApiTransport.UsingBasicAuth(new Uri(url), dbName, username, password)
+    new HttpApiTransport(new Net.Http.HttpClient(), HttpContentType.Json)
 
 let mutable db = new ArangoDBClient(dbTransport)
 
-let rebindConnection () =
-    dbTransport <- HttpApiTransport.UsingBasicAuth(new Uri(url), dbName, username, password)
+let bindConnection (url: string) (dbName: string) (userName: string) (password: string) =
+    // Default values for the root user, connecting to the `_system` database on a local instance of ArangoDB, running on Docker, taken from the official image:
+    // URL: "http://localhost:8529", Database: "_system", Username: "root", Password: "openSesame"
+    dbTransport <- UsingBasicAuth(new Uri(url), dbName, userName, password)
     db <- new ArangoDBClient(dbTransport)

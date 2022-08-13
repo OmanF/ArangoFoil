@@ -12,20 +12,17 @@ This behavior lends itself nicely to a flow based on **mutable, global** variabl
 
 The flow then proceeds as following:
 
-* Initialize the variables with the root user's credentials and the `_system` database.
-* Create new database(s).
-* Create new user(s) and give them required permissions.
-* Rebind the connection variables to the new database/user's details.
-* Continue working on the new database using the non-root user.
-* (If another new database/user is required, repeat flow as necessary).
-
-(Yes, I know, `state` monad, some other custom CE, or even referential-transparent function to create the connection... thing is I don't know how to implement the `state` monad, let alone a custom CE, and between referntial-transparent function and mutable variable, **for this specific use-case**, mutable variables felt more correct. Don't know why, just did.)
+* Initial `HttpApiTransport` object is created blank!
+* Bind the connection using the required user and database details.
+* (If needed) create new database(s) and/or new user(s), not forgetting to give the new users correct permissions for the database(s)/collection(s) as needed.
+* (If needed) rebind the connection with the new database/user's details.
+* Repeat the flow as needed.
 
 ## Usage ##
 
-The easiest way to use this library is to copy the code files into your own projects, not forgetting to reference them in the `.fsproj` file, nor to install their dependency, i.e., the `DBNetStandard` nuget, and treat them like any other project's file/modules.
+The easiest way to use this library is to copy the code files into your own projects, not forgetting to reference them in the `.fsproj` file, nor to install their dependency, i.e., the `ArangoDBNetStandard` nuget, and treat them like any other project's file/modules.
 
-Otherwise, just build the package and reference the resulting `.dll` file.
+Otherwise, just build the package and reference the resulting `.dll` file (again, not forgetting to install the `ArangoDBNetStandard` nuget dependency).
 
 ## Some functionality is missing? ##
 
