@@ -25,11 +25,9 @@ let getUserDatabaseAsync () =
         .GetResult()
 
 let createDatabaseAsync newDatabaseName newDatabaseUsers =
-    let body = new PostDatabaseBody(Name = newDatabaseName, Users = newDatabaseUsers)
-
     db
         .Database
-        .PostDatabaseAsync(body)
+        .PostDatabaseAsync(new PostDatabaseBody(Name = newDatabaseName, Users = newDatabaseUsers))
         .GetAwaiter()
         .GetResult()
 

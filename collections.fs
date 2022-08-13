@@ -43,17 +43,13 @@ let renameCollectionAsync currentCollection newCollectionName =
 let truncateCollectionAsync collectionName =
     db
         .Collection
-        .TruncateCollectionAsync(
-            collectionName
-        )
+        .TruncateCollectionAsync(collectionName)
         .GetAwaiter()
-        .GetResult
+        .GetResult()
 
 let deleteCollectionAsync collectionName =
     db
         .Collection
-        .DeleteCollectionAsync(
-            collectionName
-        )
+        .DeleteCollectionAsync(collectionName)
         .GetAwaiter()
-        .GetResult
+        .GetResult()

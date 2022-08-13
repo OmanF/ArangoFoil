@@ -11,6 +11,7 @@
     <Compile Include="collections.fs" />
     <Compile Include="documents.fs" />
     <Compile Include="users.fs" />
+    <Compile Include="cursors.fs" />
   </ItemGroup>
 
   <ItemGroup>
