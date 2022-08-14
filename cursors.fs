@@ -3,7 +3,7 @@ module Cursors
 open ArangoDBNetStandard.CursorApi.Models
 open ConnectionDetails
 
-let deleteCursorAsync<'T> cursorId =
+let deleteCursorAsync cursorId =
     db
         .Cursor
         .DeleteCursorAsync(cursorId)

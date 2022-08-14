@@ -3,14 +3,10 @@ module Collections
 open ArangoDBNetStandard.CollectionApi.Models
 open ConnectionDetails
 
-type UserCollectionType =
-    | Document
-    | Edge
-
-let getCollectionsAsync () =
+let deleteCollectionAsync collectionName =
     db
         .Collection
-        .GetCollectionsAsync()
+        .DeleteCollectionAsync(collectionName)
         .GetAwaiter()
         .GetResult()
 
@@ -21,15 +17,30 @@ let getCollectionAsync collectionName =
         .GetAwaiter()
         .GetResult()
 
-let createCollectionAsync collectionName collectionType =
-    let body =
-        match collectionType with
-        | Document -> PostCollectionBody(Name = collectionName, Type = CollectionType.Document)
-        | Edge -> PostCollectionBody(Name = collectionName, Type = CollectionType.Edge)
+let getCollectionsAsync (getCollectionsOption: GetCollectionsQuery option) =
+    let gco =
+        match getCollectionsOption with
+        | Some gco -> gco
+        | None -> null
 
     db
         .Collection
-        .PostCollectionAsync(body)
+        .GetCollectionsAsync(gco)
+        .GetAwaiter()
+        .GetResult()
+
+let createCollectionAsync
+    (newCollectionMetadata: PostCollectionBody)
+    (createCollectionOption: PostCollectionQuery option)
+    =
+    let cco =
+        match createCollectionOption with
+        | Some cco -> cco
+        | None -> null
+
+    db
+        .Collection
+        .PostCollectionAsync(newCollectionMetadata, cco)
         .GetAwaiter()
         .GetResult()
 
@@ -44,12 +55,5 @@ let truncateCollectionAsync collectionName =
     db
         .Collection
         .TruncateCollectionAsync(collectionName)
-        .GetAwaiter()
-        .GetResult()
-
-let deleteCollectionAsync collectionName =
-    db
-        .Collection
-        .DeleteCollectionAsync(collectionName)
         .GetAwaiter()
         .GetResult()
