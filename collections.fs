@@ -17,30 +17,25 @@ let getCollectionAsync collectionName =
         .GetAwaiter()
         .GetResult()
 
-let getCollectionsAsync (getCollectionsOption: GetCollectionsQuery option) =
-    let gco =
-        match getCollectionsOption with
-        | Some gco -> gco
-        | None -> null
-
+let getCollectionsAsync excludeSystems =
     db
         .Collection
-        .GetCollectionsAsync(gco)
+        .GetCollectionsAsync(GetCollectionsQuery(ExcludeSystem = excludeSystems))
         .GetAwaiter()
         .GetResult()
 
 let createCollectionAsync
     (newCollectionMetadata: PostCollectionBody)
-    (createCollectionOption: PostCollectionQuery option)
+    (createCollectionQueryOption: PostCollectionQuery option)
     =
-    let cco =
-        match createCollectionOption with
-        | Some cco -> cco
+    let ccq =
+        match createCollectionQueryOption with
+        | Some ccq -> ccq
         | None -> null
 
     db
         .Collection
-        .PostCollectionAsync(newCollectionMetadata, cco)
+        .PostCollectionAsync(newCollectionMetadata, ccq)
         .GetAwaiter()
         .GetResult()
 

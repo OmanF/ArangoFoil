@@ -2,6 +2,7 @@ module Databases
 
 open ArangoDBNetStandard.DatabaseApi.Models
 open ConnectionDetails
+open System.Collections.Generic
 
 let deleteDatabaseAsync dbToDelete =
     db
@@ -31,9 +32,20 @@ let getUserDatabaseAsync () =
         .GetAwaiter()
         .GetResult()
 
-let createDatabaseAsync (newDatabaseMetadata: PostDatabaseBody) =
+let createDatabaseAsync
+    newDatabaseName
+    (newDatabaseUsersList: (string * string * bool * Dictionary<string, obj>) list)
+    =
+    let databaseUsers =
+        newDatabaseUsersList
+        |> List.toArray
+        |> Array.collect (fun user ->
+            let userName, password, active, extra = user
+            [| DatabaseUser(Username = userName, Passwd = password, Active = active, Extra = extra) |])
+
+
     db
         .Database
-        .PostDatabaseAsync(newDatabaseMetadata)
+        .PostDatabaseAsync(PostDatabaseBody(Name = newDatabaseName, Users = databaseUsers))
         .GetAwaiter()
         .GetResult()

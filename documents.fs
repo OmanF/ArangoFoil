@@ -5,43 +5,47 @@ open ArangoDBNetStandard.DocumentApi.Models
 open ArangoDBNetStandard.Serialization
 open ConnectionDetails
 
-let deleteDocumentByIdAsync documentId (deleteDocumentOptions: DeleteDocumentQuery option) =
-    let dco =
-        match deleteDocumentOptions with
-        | Some dco -> dco
+let deleteDocumentByIdAsync documentId (deleteDocumentQueryOption: DeleteDocumentQuery option) =
+    let dcq =
+        match deleteDocumentQueryOption with
+        | Some dcq -> dcq
         | None -> null
 
     db
         .Document
-        .DeleteDocumentAsync(documentId, dco)
+        .DeleteDocumentAsync(documentId, dcq)
         .GetAwaiter()
         .GetResult()
 
-let deleteDocumentByCollectionKeyAsync collectionName documentKey (deleteDocumentOptions: DeleteDocumentQuery option) =
-    let dco =
-        match deleteDocumentOptions with
-        | Some dco -> dco
+let deleteDocumentByCollectionKeyAsync
+    collectionName
+    documentKey
+    (deleteDocumentQueryOption: DeleteDocumentQuery option)
+    =
+    let dcq =
+        match deleteDocumentQueryOption with
+        | Some dcq -> dcq
         | None -> null
 
     db
         .Document
-        .DeleteDocumentAsync(collectionName, documentKey, dco)
+        .DeleteDocumentAsync(collectionName, documentKey, dcq)
         .GetAwaiter()
         .GetResult()
 
 let deleteDocumentsAsync
     collectionName
     (documents: Collections.Generic.IList<string>)
-    (deleteDocumentsOptions: DeleteDocumentsQuery option)
+    (deleteDocumentsQueryOption: DeleteDocumentsQuery option)
     =
-    let ddo =
-        match deleteDocumentsOptions with
-        | Some ddo -> ddo
+    let ddq =
+        match deleteDocumentsQueryOption with
+        | Some ddq -> ddq
         | None -> null
 
     db
         .Document
-        .DeleteDocumentsAsync(collectionName, documents, ddo)
+        .DeleteDocumentsAsync(collectionName, documents, ddq)
         .GetAwaiter()
         .GetResult()
 
@@ -69,12 +73,12 @@ let getDocumentsAsync<'T> collectionName documentsKeys =
 let patchDocumentByIdAsync<'T, 'U>
     documentId
     (replaceDocument: 'T)
-    (patchDocumentOption: PatchDocumentQuery option)
+    (patchDocumentQueryOption: PatchDocumentQuery option)
     (apiSerializationOption: ApiClientSerializationOptions option)
     =
-    let pdo =
-        match patchDocumentOption with
-        | Some pdo -> pdo
+    let pdq =
+        match patchDocumentQueryOption with
+        | Some pdq -> pdq
         | None -> null
 
     let aso =
@@ -84,7 +88,7 @@ let patchDocumentByIdAsync<'T, 'U>
 
     db
         .Document
-        .PatchDocumentAsync(documentId, replaceDocument, pdo, aso)
+        .PatchDocumentAsync(documentId, replaceDocument, pdq, aso)
         .GetAwaiter()
         .GetResult()
 
@@ -92,28 +96,28 @@ let patchDocumentByCollectionKeyAsync<'T, 'U>
     (collectionName: string)
     (documentKey: string)
     (replacementDocument: 'T)
-    (patchDocumentOption: PatchDocumentQuery option)
+    (patchDocumentQueryOption: PatchDocumentQuery option)
     =
-    let pdo =
-        match patchDocumentOption with
-        | Some pdo -> pdo
+    let pdq =
+        match patchDocumentQueryOption with
+        | Some pdq -> pdq
         | None -> null
 
     db
         .Document
-        .PatchDocumentAsync(collectionName, documentKey, replacementDocument, pdo)
+        .PatchDocumentAsync(collectionName, documentKey, replacementDocument, pdq)
         .GetAwaiter()
         .GetResult()
 
 let patchDocumentsAsync<'T>
     collectionName
     (documents: Collections.Generic.IList<'T>)
-    (patchDocumentOption: PatchDocumentsQuery option)
+    (patchDocumentQueryOption: PatchDocumentsQuery option)
     (apiSerializationOption: ApiClientSerializationOptions option)
     =
-    let pdo =
-        match patchDocumentOption with
-        | Some pdo -> pdo
+    let pdq =
+        match patchDocumentQueryOption with
+        | Some pdq -> pdq
         | None -> null
 
     let aso =
@@ -123,19 +127,19 @@ let patchDocumentsAsync<'T>
 
     db
         .Document
-        .PatchDocumentsAsync(collectionName, documents, pdo, aso)
+        .PatchDocumentsAsync(collectionName, documents, pdq, aso)
         .GetAwaiter()
         .GetResult()
 
 let createDocumentAsync<'T>
     collectionName
     document
-    (createDocumentOptions: PostDocumentsQuery option)
+    (createDocumentQueryOption: PostDocumentsQuery option)
     (apiSerializationOption: ApiClientSerializationOptions option)
     =
-    let pdo =
-        match createDocumentOptions with
-        | Some pdo -> pdo
+    let pdq =
+        match createDocumentQueryOption with
+        | Some pdq -> pdq
         | None -> null
 
     let aso =
@@ -145,19 +149,19 @@ let createDocumentAsync<'T>
 
     db
         .Document
-        .PostDocumentAsync<'T>(collectionName, document, pdo, aso)
+        .PostDocumentAsync<'T>(collectionName, document, pdq, aso)
         .GetAwaiter()
         .GetResult()
 
 let createDocumentsAsync<'T>
     collectionName
     (documents: Collections.Generic.IList<'T>)
-    (createDocumentOptions: PostDocumentsQuery option)
+    (createDocumentQueryOption: PostDocumentsQuery option)
     (apiSerializationOption: ApiClientSerializationOptions option)
     =
-    let pdo =
-        match createDocumentOptions with
-        | Some pdo -> pdo
+    let pdq =
+        match createDocumentQueryOption with
+        | Some pdq -> pdq
         | None -> null
 
     let aso =
@@ -167,19 +171,19 @@ let createDocumentsAsync<'T>
 
     db
         .Document
-        .PostDocumentsAsync<'T>(collectionName, documents, pdo, aso)
+        .PostDocumentsAsync<'T>(collectionName, documents, pdq, aso)
         .GetAwaiter()
         .GetResult()
 
 let replaceDocumentByIdAsync<'T>
     documentId
     (replaceDocument: 'T)
-    (replaceDocumentOptions: PutDocumentQuery option)
+    (replaceDocumentQueryOption: PutDocumentQuery option)
     (apiSerializationOption: ApiClientSerializationOptions option)
     =
-    let rdo =
-        match replaceDocumentOptions with
-        | Some rdo -> rdo
+    let rdq =
+        match replaceDocumentQueryOption with
+        | Some rdq -> rdq
         | None -> null
 
     let aso =
@@ -189,7 +193,7 @@ let replaceDocumentByIdAsync<'T>
 
     db
         .Document
-        .PutDocumentAsync(documentId, replaceDocument, rdo, aso)
+        .PutDocumentAsync(documentId, replaceDocument, rdq, aso)
         .GetAwaiter()
         .GetResult()
 
@@ -197,28 +201,28 @@ let replaceDocumentByCollectionKeyAsync<'T>
     collectionName
     documentKey
     (replacementDocument: 'T)
-    (replaceDocumentOptions: PutDocumentQuery option)
+    (replaceDocumentQueryOption: PutDocumentQuery option)
     =
-    let rdo =
-        match replaceDocumentOptions with
-        | Some rdo -> rdo
+    let rdq =
+        match replaceDocumentQueryOption with
+        | Some rdq -> rdq
         | None -> null
 
     db
         .Document
-        .PutDocumentAsync(collectionName, documentKey, replacementDocument, rdo)
+        .PutDocumentAsync(collectionName, documentKey, replacementDocument, rdq)
         .GetAwaiter()
         .GetResult()
 
 let replaceDocumentsAsync<'T>
     collectionName
     (documents: Collections.Generic.IList<'T>)
-    (replaceDocumentOptions: PutDocumentsQuery option)
+    (replaceDocumentQueryOption: PutDocumentsQuery option)
     (apiSerializationOption: ApiClientSerializationOptions option)
     =
-    let rdo =
-        match replaceDocumentOptions with
-        | Some rdo -> rdo
+    let rdq =
+        match replaceDocumentQueryOption with
+        | Some rdq -> rdq
         | None -> null
 
     let aso =
@@ -228,6 +232,6 @@ let replaceDocumentsAsync<'T>
 
     db
         .Document
-        .PutDocumentsAsync(collectionName, documents, rdo, aso)
+        .PutDocumentsAsync(collectionName, documents, rdq, aso)
         .GetAwaiter()
         .GetResult()

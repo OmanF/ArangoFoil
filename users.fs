@@ -2,6 +2,7 @@ module Users
 
 open ArangoDBNetStandard.UserApi.Models
 open ConnectionDetails
+open System.Collections.Generic
 
 type AccessLevel =
     | NotAuthorized
@@ -50,17 +51,25 @@ let getUserAsync userName =
 let getUsersAsync () =
     db.User.GetUsersAsync().GetAwaiter().GetResult()
 
-let patchUserAsync userName (newUserMetadata: PatchUserBody) =
+let patchUserAsync userName (newUserMetadata: (string * bool * Dictionary<string, obj>)) =
+    let password, active, extra = newUserMetadata
+    let patchedUser = PatchUserBody(Passwd = password, Active = active, Extra = extra)
+
     db
         .User
-        .PatchUserAsync(userName, newUserMetadata)
+        .PatchUserAsync(userName, patchedUser)
         .GetAwaiter()
         .GetResult()
 
-let createUserAsync (newUserMetadata: PostUserBody) =
+let createUserAsync (newUserMetadata: (string * string * bool * Dictionary<string, obj>)) =
+    let userName, password, active, extra = newUserMetadata
+
+    let newUser =
+        PostUserBody(User = userName, Passwd = password, Active = active, Extra = extra)
+
     db
         .User
-        .PostUserAsync(newUserMetadata)
+        .PostUserAsync(newUser)
         .GetAwaiter()
         .GetResult()
 
@@ -87,9 +96,12 @@ let grantDatabaseAccessAsync userName database accessLevel =
         .GetAwaiter()
         .GetResult()
 
-let replaceUserAsync userName (newUserMetadata: PutUserBody) =
+let replaceUserAsync userName (newUserMetadata: (string * bool * Dictionary<string, obj>)) =
+    let password, active, extra = newUserMetadata
+    let replacedUser = PutUserBody(Passwd = password, Active = active, Extra = extra)
+
     db
         .User
-        .PutUserAsync(userName, newUserMetadata)
+        .PutUserAsync(userName, replacedUser)
         .GetAwaiter()
         .GetResult()
