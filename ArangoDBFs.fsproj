@@ -12,6 +12,7 @@
     <Compile Include="documents.fs" />
     <Compile Include="users.fs" />
     <Compile Include="cursors.fs" />
+    <Compile Include="views.fs" />
   </ItemGroup>
 
   <ItemGroup>
