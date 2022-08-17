@@ -24,9 +24,9 @@ The easiest way to use this library is to copy the code files into your own proj
 
 Otherwise, just build the package and reference the resulting `.dll` file (again, not forgetting to install the `ArangoDBNetStandard` nuget dependency).
 
-Some of the functions, mostly those that create or update, entities (databases, collections, documents, users, etc.) require creating instances of the corresponding `Model` class. This in turn means the code calling those functions will need to `open` the `Model`(s).  
-While this forcefully injects the driver's code into the application code, this is an intentional decision.  
-In the same vein, none of the functions support the `<API name>HeaderProperties` that some of the C#'s driver's functions support since I find the data returned by it immaterial and none of the headers may manipulate the request (as can the models!)
+Some of the functions, mostly those that create or update, entities (databases, collections, documents, users, etc.) require creating, and passing, instances of the corresponding `Model` class. This in turn means the application code calling those functions will need to `open` the `Model`(s).  
+While this forcefully injects the driver's code into the application code, this is an intentional decision as I prefer to have the functions as robust, and conforming to both the C# driver, and the HTTP underlying the driver, specifications over a simpler, incomplete, function.  
+In the same vein, none of the functions support the `<API name>HeaderProperties` that some of the C#'s driver's functions offer since these instances don't manipulate the request in any way, like the options may, and the information returned by those headers is mostly useful only in debug (which would be better suited over the UI and/or `arangosh`).
 
 ## Some functionality is missing? ##
 
