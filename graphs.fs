@@ -100,3 +100,63 @@ let deleteVertexCollectionAsync graphName collectionName (dropCollections: bool 
         )
         .GetAwaiter()
         .GetResult()
+
+let getEdgeByHandleAsync graphName edgeHandle (rev: string option) =
+    let rev = Option.defaultValue "" rev
+
+    db
+        .Graph
+        .GetEdgeAsync(graphName, edgeHandle, GetEdgeQuery(Rev = rev))
+        .GetAwaiter()
+        .GetResult()
+
+let getEdgeByCollectionKeyAsync graphName collectionName edgeKey (rev: string option) =
+    let rev = Option.defaultValue "" rev
+
+    db
+        .Graph
+        .GetEdgeAsync(graphName, collectionName, edgeKey, GetEdgeQuery(Rev = rev))
+        .GetAwaiter()
+        .GetResult()
+
+let getEdgeCollectionsAsync graphName =
+    db
+        .Graph
+        .GetEdgeCollectionsAsync(graphName)
+        .GetAwaiter()
+        .GetResult()
+
+let getGraphAsync graphName =
+    db
+        .Graph
+        .GetGraphAsync(graphName)
+        .GetAwaiter()
+        .GetResult()
+
+let getGraphsAsync () =
+    db.Graph.GetGraphsAsync().GetAwaiter().GetResult()
+
+let getVertexByIdAsync graphName documentId (rev: bool option) =
+    let rev = Option.defaultValue false rev
+
+    db
+        .Graph
+        .GetVertexAsync(graphName, documentId, GetVertexQuery(Rev = rev))
+        .GetAwaiter()
+        .GetResult()
+
+let getVertexByCollectionKeyAsync graphName collectionName vertexKey (rev: bool option) =
+    let rev = Option.defaultValue false rev
+
+    db
+        .Graph
+        .GetVertexAsync(graphName, collectionName, vertexKey, GetVertexQuery(Rev = rev))
+        .GetAwaiter()
+        .GetResult()
+
+let getVertexCollectionsAsync graphName =
+    db
+        .Graph
+        .GetVertexCollectionsAsync(graphName)
+        .GetAwaiter()
+        .GetResult()
