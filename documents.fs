@@ -131,7 +131,7 @@ let patchDocumentsAsync<'T>
         .GetAwaiter()
         .GetResult()
 
-let createDocumentAsync<'T>
+let postDocumentAsync<'T>
     collectionName
     document
     (createDocumentQueryOption: PostDocumentsQuery option)
@@ -153,7 +153,7 @@ let createDocumentAsync<'T>
         .GetAwaiter()
         .GetResult()
 
-let createDocumentsAsync<'T>
+let postDocumentsAsync<'T>
     collectionName
     (documents: Collections.Generic.IList<'T>)
     (createDocumentQueryOption: PostDocumentsQuery option)
@@ -175,7 +175,7 @@ let createDocumentsAsync<'T>
         .GetAwaiter()
         .GetResult()
 
-let replaceDocumentByIdAsync<'T>
+let putDocumentByIdAsync<'T>
     documentId
     (replaceDocument: 'T)
     (replaceDocumentQueryOption: PutDocumentQuery option)
@@ -197,7 +197,7 @@ let replaceDocumentByIdAsync<'T>
         .GetAwaiter()
         .GetResult()
 
-let replaceDocumentByCollectionKeyAsync<'T>
+let putDocumentByCollectionKeyAsync<'T>
     collectionName
     documentKey
     (replacementDocument: 'T)
@@ -214,7 +214,7 @@ let replaceDocumentByCollectionKeyAsync<'T>
         .GetAwaiter()
         .GetResult()
 
-let replaceDocumentsAsync<'T>
+let putDocumentsAsync<'T>
     collectionName
     (documents: Collections.Generic.IList<'T>)
     (replaceDocumentQueryOption: PutDocumentsQuery option)

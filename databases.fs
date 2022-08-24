@@ -32,10 +32,7 @@ let getUserDatabaseAsync () =
         .GetAwaiter()
         .GetResult()
 
-let createDatabaseAsync
-    newDatabaseName
-    (newDatabaseUsersList: (string * string * bool * Dictionary<string, obj>) list)
-    =
+let postDatabaseAsync newDatabaseName (newDatabaseUsersList: (string * string * bool * Dictionary<string, obj>) list) =
     let databaseUsers =
         newDatabaseUsersList
         |> List.toArray

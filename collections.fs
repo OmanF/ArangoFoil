@@ -24,7 +24,7 @@ let getCollectionsAsync excludeSystems =
         .GetAwaiter()
         .GetResult()
 
-let createCollectionAsync
+let postCollectionAsync
     (newCollectionMetadata: PostCollectionBody)
     (createCollectionQueryOption: PostCollectionQuery option)
     =

@@ -160,3 +160,63 @@ let getVertexCollectionsAsync graphName =
         .GetVertexCollectionsAsync(graphName)
         .GetAwaiter()
         .GetResult()
+
+let patchEdgeByIdAsync<'T, 'U> graphName documentId (edge: 'T) (patchEdgeQueryOption: PatchEdgeQuery option) =
+    let peq =
+        match patchEdgeQueryOption with
+        | Some peq -> peq
+        | None -> null
+
+    db
+        .Graph
+        .PatchEdgeAsync(graphName, documentId, edge, peq)
+        .GetAwaiter()
+        .GetResult()
+
+let patchEdgeByCollectionKeyAsync<'T, 'U>
+    graphName
+    collectionName
+    edgeKey
+    (edge: 'T)
+    (patchEdgeQueryOption: PatchEdgeQuery option)
+    =
+    let peq =
+        match patchEdgeQueryOption with
+        | Some peq -> peq
+        | None -> null
+
+    db
+        .Graph
+        .PatchEdgeAsync(graphName, collectionName, edgeKey, edge, peq)
+        .GetAwaiter()
+        .GetResult()
+
+let patchVertexByIdAsync<'T, 'U> graphName documentId (body: 'T) (patchVertexQueryOption: PatchVertexQuery option) =
+    let pvq =
+        match patchVertexQueryOption with
+        | Some pvq -> pvq
+        | None -> null
+
+    db
+        .Graph
+        .PatchVertexAsync(graphName, documentId, body, pvq)
+        .GetAwaiter()
+        .GetResult()
+
+let patchVertexByCollectionKey<'T, 'U>
+    graphName
+    collectionName
+    vertexKey
+    (body: 'T)
+    (patchVertexQueryOption: PatchVertexQuery option)
+    =
+    let pvq =
+        match patchVertexQueryOption with
+        | Some pvq -> pvq
+        | None -> null
+
+    db
+        .Graph
+        .PatchVertexAsync(graphName, collectionName, vertexKey, body, pvq)
+        .GetAwaiter()
+        .GetResult()

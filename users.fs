@@ -16,7 +16,7 @@ let accessLevelClassifierHelperFunction accessLevel =
         | ReadOnly -> "ro"
         | ReadWrite -> "rw"
 
-let removeCollectionAccessAsync userName database collection =
+let deleteCollectionAccessAsync userName database collection =
     db
         .User
         .DeleteCollectionAccessLevelAsync(
@@ -27,7 +27,7 @@ let removeCollectionAccessAsync userName database collection =
         .GetAwaiter()
         .GetResult
 
-let removeDatabaseAccessAsync userName database =
+let deleteDatabaseAccessAsync userName database =
     db
         .User
         .DeleteDatabaseAccessLevelAsync(userName, database)
@@ -61,7 +61,7 @@ let patchUserAsync userName (newUserMetadata: (string * bool * Dictionary<string
         .GetAwaiter()
         .GetResult()
 
-let createUserAsync (newUserMetadata: (string * string * bool * Dictionary<string, obj>)) =
+let postUserAsync (newUserMetadata: (string * string * bool * Dictionary<string, obj>)) =
     let userName, password, active, extra = newUserMetadata
 
     let newUser =
@@ -73,7 +73,7 @@ let createUserAsync (newUserMetadata: (string * string * bool * Dictionary<strin
         .GetAwaiter()
         .GetResult()
 
-let grantCollectionAccessAsync userName database collection accessLevel =
+let putCollectionAccessAsync userName database collection accessLevel =
     let access = accessLevelClassifierHelperFunction accessLevel
 
     db
@@ -87,7 +87,7 @@ let grantCollectionAccessAsync userName database collection accessLevel =
         .GetAwaiter()
         .GetResult
 
-let grantDatabaseAccessAsync userName database accessLevel =
+let putDatabaseAccessAsync userName database accessLevel =
     let access = accessLevelClassifierHelperFunction accessLevel
 
     db
@@ -96,7 +96,7 @@ let grantDatabaseAccessAsync userName database accessLevel =
         .GetAwaiter()
         .GetResult()
 
-let replaceUserAsync userName (newUserMetadata: (string * bool * Dictionary<string, obj>)) =
+let putUserAsync userName (newUserMetadata: (string * bool * Dictionary<string, obj>)) =
     let password, active, extra = newUserMetadata
     let replacedUser = PutUserBody(Passwd = password, Active = active, Extra = extra)
 

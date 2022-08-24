@@ -38,21 +38,21 @@ let patchViewPropertiesAsync viewName (viewMetadata: ViewDetails) =
         .GetAwaiter()
         .GetResult()
 
-let createViewAsync (viewMetadata: ViewDetails) =
+let postViewAsync (viewMetadata: ViewDetails) =
     db
         .View
         .PostCreateViewAsync(viewMetadata)
         .GetAwaiter()
         .GetResult()
 
-let renameViewAsync viewName newViewName =
+let putViewAsync viewName newViewName =
     db
         .View
         .PutRenameViewAsync(viewName, PutRenameViewBody(Name = newViewName))
         .GetAwaiter()
         .GetResult()
 
-let replaceViewPropertiesAsync viewName (viewMetadata: ViewDetails) =
+let putViewPropertiesAsync viewName (viewMetadata: ViewDetails) =
     db
         .View
         .PutViewPropertiesAsync(viewName, viewMetadata)

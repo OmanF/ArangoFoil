@@ -10,14 +10,14 @@ let deleteCursorAsync cursorId =
         .GetAwaiter()
         .GetResult()
 
-let createCursorAsync<'T> (cursorBody: PostCursorBody) =
+let postCursorAsync<'T> (cursorBody: PostCursorBody) =
     db
         .Cursor
         .PostCursorAsync<'T>(cursorBody)
         .GetAwaiter()
         .GetResult()
 
-let manipulateCursor<'T> cursorId =
+let putCursorAsync<'T> cursorId =
     db
         .Cursor
         .PutCursorAsync<'T>(cursorId)
