@@ -1,7 +1,12 @@
 module Collections
 
 open ArangoDBNetStandard.CollectionApi.Models
+open HelperFunctions
 open ConnectionDetails
+
+type CollectionType =
+    | Document
+    | Edge
 
 let deleteCollectionAsync collectionName =
     db
@@ -24,25 +29,30 @@ let getCollectionsAsync excludeSystems =
         .GetAwaiter()
         .GetResult()
 
-let postCollectionAsync
-    (newCollectionMetadata: PostCollectionBody)
-    (createCollectionQueryOption: PostCollectionQuery option)
-    =
-    let ccq =
-        match createCollectionQueryOption with
-        | Some ccq -> ccq
-        | None -> null
+let postCollectionAsync name collectionType collectionKeysOption newCollectionExtraData createCollectionQueryOption =
+    let collectionTypeString =
+        match collectionType with
+        | Document -> "document"
+        | Edge -> "edge"
+
+    let postCollectionBody, postCollectionQuery =
+        createPostCollectionBodyObject
+            name
+            collectionTypeString
+            collectionKeysOption
+            newCollectionExtraData
+            createCollectionQueryOption
 
     db
         .Collection
-        .PostCollectionAsync(newCollectionMetadata, ccq)
+        .PostCollectionAsync(postCollectionBody, postCollectionQuery)
         .GetAwaiter()
         .GetResult()
 
-let renameCollectionAsync currentCollection newCollectionName =
+let renameCollectionAsync currentCollectionName newCollectionName =
     db
         .Collection
-        .RenameCollectionAsync(currentCollection, RenameCollectionBody(Name = newCollectionName))
+        .RenameCollectionAsync(currentCollectionName, RenameCollectionBody(Name = newCollectionName))
         .GetAwaiter()
         .GetResult()
 

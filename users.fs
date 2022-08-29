@@ -16,16 +16,19 @@ let accessLevelClassifierHelperFunction accessLevel =
         | ReadOnly -> "ro"
         | ReadWrite -> "rw"
 
+///<summary>
+/// Revoke access of the specified user to the specified collection.
+/// Can only be run by a user with access to the "_system" database.
+/// </summary>
+/// <param name="userName">The username denoting the user of whom to revoke access.</param>
+/// <param name="database">The database containing the collection which is the target of the revoke action.</param>
+/// <param name="collection">The collection to revoke access to.</param>
 let deleteCollectionAccessAsync userName database collection =
     db
         .User
-        .DeleteCollectionAccessLevelAsync(
-            userName,
-            database,
-            collection
-        )
+        .DeleteCollectionAccessLevelAsync(userName, database, collection)
         .GetAwaiter()
-        .GetResult
+        .GetResult()
 
 let deleteDatabaseAccessAsync userName database =
     db

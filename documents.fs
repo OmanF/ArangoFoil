@@ -3,49 +3,41 @@ module Documents
 open System
 open ArangoDBNetStandard.DocumentApi.Models
 open ArangoDBNetStandard.Serialization
+open HelperFunctions
 open ConnectionDetails
 
-let deleteDocumentByIdAsync documentId (deleteDocumentQueryOption: DeleteDocumentQuery option) =
-    let dcq =
-        match deleteDocumentQueryOption with
-        | Some dcq -> dcq
-        | None -> null
+let deleteDocumentByIdAsync documentId (deleteDocumentQueryOption: (bool * bool * bool) option) =
+    let ddq = createDeleteDocumentQueryObject deleteDocumentQueryOption
 
     db
         .Document
-        .DeleteDocumentAsync(documentId, dcq)
+        .DeleteDocumentAsync(documentId, ddq)
         .GetAwaiter()
         .GetResult()
 
 let deleteDocumentByCollectionKeyAsync
     collectionName
     documentKey
-    (deleteDocumentQueryOption: DeleteDocumentQuery option)
+    (deleteDocumentQueryOption: (bool * bool * bool) option)
     =
-    let dcq =
-        match deleteDocumentQueryOption with
-        | Some dcq -> dcq
-        | None -> null
+    let ddq = createDeleteDocumentQueryObject deleteDocumentQueryOption
 
     db
         .Document
-        .DeleteDocumentAsync(collectionName, documentKey, dcq)
+        .DeleteDocumentAsync(collectionName, documentKey, ddq)
         .GetAwaiter()
         .GetResult()
 
 let deleteDocumentsAsync
     collectionName
     (documents: Collections.Generic.IList<string>)
-    (deleteDocumentsQueryOption: DeleteDocumentsQuery option)
+    (deleteDocumentsQueryOption: (bool * bool * bool * bool) option)
     =
-    let ddq =
-        match deleteDocumentsQueryOption with
-        | Some ddq -> ddq
-        | None -> null
+    let ddqs = createDeleteDocumentsQueryObject deleteDocumentsQueryOption
 
     db
         .Document
-        .DeleteDocumentsAsync(collectionName, documents, ddq)
+        .DeleteDocumentsAsync(collectionName, documents, ddqs)
         .GetAwaiter()
         .GetResult()
 
@@ -73,18 +65,11 @@ let getDocumentsAsync<'T> collectionName documentsKeys =
 let patchDocumentByIdAsync<'T, 'U>
     documentId
     (replaceDocument: 'T)
-    (patchDocumentQueryOption: PatchDocumentQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
+    (patchDocumentQueryOption: (bool * bool * bool * bool * bool * bool * bool) option)
+    (apiSerializationOption: (bool * bool * bool) option)
     =
-    let pdq =
-        match patchDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
-
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+    let pdq = createPatchDocumentQueryObject patchDocumentQueryOption
+    let aso = createApiSerializationOptionsObject apiSerializationOption
 
     db
         .Document
@@ -96,12 +81,9 @@ let patchDocumentByCollectionKeyAsync<'T, 'U>
     (collectionName: string)
     (documentKey: string)
     (replacementDocument: 'T)
-    (patchDocumentQueryOption: PatchDocumentQuery option)
+    (patchDocumentQueryOption: (bool * bool * bool * bool * bool * bool * bool) option)
     =
-    let pdq =
-        match patchDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
+    let pdq = createPatchDocumentQueryObject patchDocumentQueryOption
 
     db
         .Document
@@ -112,40 +94,26 @@ let patchDocumentByCollectionKeyAsync<'T, 'U>
 let patchDocumentsAsync<'T>
     collectionName
     (documents: Collections.Generic.IList<'T>)
-    (patchDocumentQueryOption: PatchDocumentsQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
+    (patchDocumentQueryOption: (bool * bool * bool * bool * bool * bool * bool) option)
+    (apiSerializationOption: (bool * bool * bool) option)
     =
-    let pdq =
-        match patchDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
-
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+    let pdqs = createPatchDocumentsQueryObject patchDocumentQueryOption
+    let aso = createApiSerializationOptionsObject apiSerializationOption
 
     db
         .Document
-        .PatchDocumentsAsync(collectionName, documents, pdq, aso)
+        .PatchDocumentsAsync(collectionName, documents, pdqs, aso)
         .GetAwaiter()
         .GetResult()
 
 let postDocumentAsync<'T>
     collectionName
     document
-    (createDocumentQueryOption: PostDocumentsQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
+    (createDocumentQueryOption: (bool * bool * bool * bool * bool) option)
+    (apiSerializationOption: (bool * bool * bool) option)
     =
-    let pdq =
-        match createDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
-
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+    let pdq = createPostDocumentQueryObject createDocumentQueryOption
+    let aso = createApiSerializationOptionsObject apiSerializationOption
 
     db
         .Document
@@ -156,18 +124,11 @@ let postDocumentAsync<'T>
 let postDocumentsAsync<'T>
     collectionName
     (documents: Collections.Generic.IList<'T>)
-    (createDocumentQueryOption: PostDocumentsQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
+    (createDocumentQueryOption: (bool * bool * bool * bool * bool) option)
+    (apiSerializationOption: (bool * bool * bool) option)
     =
-    let pdq =
-        match createDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
-
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+    let pdq = createPostDocumentQueryObject createDocumentQueryOption
+    let aso = createApiSerializationOptionsObject apiSerializationOption
 
     db
         .Document
@@ -178,18 +139,11 @@ let postDocumentsAsync<'T>
 let putDocumentByIdAsync<'T>
     documentId
     (replaceDocument: 'T)
-    (replaceDocumentQueryOption: PutDocumentQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
+    (replaceDocumentQueryOption: (bool * bool * bool * bool * bool) option)
+    (apiSerializationOption: (bool * bool * bool) option)
     =
-    let rdq =
-        match replaceDocumentQueryOption with
-        | Some rdq -> rdq
-        | None -> null
-
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+    let rdq = createPutDocumentQueryObject replaceDocumentQueryOption
+    let aso = createApiSerializationOptionsObject apiSerializationOption
 
     db
         .Document
@@ -201,12 +155,9 @@ let putDocumentByCollectionKeyAsync<'T>
     collectionName
     documentKey
     (replacementDocument: 'T)
-    (replaceDocumentQueryOption: PutDocumentQuery option)
+    (replaceDocumentQueryOption: (bool * bool * bool * bool * bool) option)
     =
-    let rdq =
-        match replaceDocumentQueryOption with
-        | Some rdq -> rdq
-        | None -> null
+    let rdq = createPutDocumentQueryObject replaceDocumentQueryOption
 
     db
         .Document
@@ -217,18 +168,11 @@ let putDocumentByCollectionKeyAsync<'T>
 let putDocumentsAsync<'T>
     collectionName
     (documents: Collections.Generic.IList<'T>)
-    (replaceDocumentQueryOption: PutDocumentsQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
+    (replaceDocumentQueryOption: (bool * bool * bool * bool * bool) option)
+    (apiSerializationOption: (bool * bool * bool) option)
     =
-    let rdq =
-        match replaceDocumentQueryOption with
-        | Some rdq -> rdq
-        | None -> null
-
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+    let rdq = createPutDocumentsQueryObject replaceDocumentQueryOption
+    let aso = createApiSerializationOptionsObject apiSerializationOption
 
     db
         .Document

@@ -32,14 +32,19 @@ let getUserDatabaseAsync () =
         .GetAwaiter()
         .GetResult()
 
-let postDatabaseAsync newDatabaseName (newDatabaseUsersList: (string * string * bool * Dictionary<string, obj>) list) =
+let postDatabaseAsync
+    newDatabaseName
+    (newDatabaseUsersList: (string * string * bool * Dictionary<string, obj> option) list)
+    =
     let databaseUsers =
         newDatabaseUsersList
-        |> List.toArray
-        |> Array.collect (fun user ->
-            let userName, password, active, extra = user
-            [| DatabaseUser(Username = userName, Passwd = password, Active = active, Extra = extra) |])
-
+        |> List.collect (fun newUser ->
+            match newUser with
+            | userName, password, active, Some extra ->
+                [ DatabaseUser(Username = userName, Passwd = password, Active = active, Extra = extra) ]
+            | userName, password, active, None ->
+                [ DatabaseUser(Username = userName, Passwd = password, Active = active) ])
+        |> Array.ofList
 
     db
         .Database
