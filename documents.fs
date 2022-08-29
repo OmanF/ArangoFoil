@@ -1,8 +1,6 @@
 module Documents
 
 open System
-open ArangoDBNetStandard.DocumentApi.Models
-open ArangoDBNetStandard.Serialization
 open HelperFunctions
 open ConnectionDetails
 
