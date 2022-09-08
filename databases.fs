@@ -3,11 +3,22 @@ module Databases
 open ArangoDBNetStandard.DatabaseApi.Models
 open ConnectionDetails
 open System.Collections.Generic
+open System
 
-let deleteDatabaseAsync dbToDelete =
+type UnofficialDatabaseUser =
+    { Active: Nullable<bool>
+      Extra: Dictionary<string, obj> option
+      Passwd: string
+      Username: string }
+
+type PostDatabase =
+    { Name: string
+      Users: seq<UnofficialDatabaseUser> }
+
+let deleteDatabaseAsync databaseName =
     db
         .Database
-        .DeleteDatabaseAsync(dbToDelete)
+        .DeleteDatabaseAsync(databaseName)
         .GetAwaiter()
         .GetResult()
 
@@ -25,29 +36,26 @@ let getDatabasesAsync () =
         .GetAwaiter()
         .GetResult()
 
-let getUserDatabaseAsync () =
+let getUserDatabasesAsync () =
     db
         .Database
         .GetUserDatabasesAsync()
         .GetAwaiter()
         .GetResult()
 
-let postDatabaseAsync
-    newDatabaseName
-    (newDatabaseUsersList: (string * string * bool * Dictionary<string, obj> option) list)
-    =
-    let databaseUsers =
-        newDatabaseUsersList
-        |> List.collect (fun newUser ->
-            match newUser with
-            | userName, password, active, Some extra ->
-                [ DatabaseUser(Username = userName, Passwd = password, Active = active, Extra = extra) ]
-            | userName, password, active, None ->
-                [ DatabaseUser(Username = userName, Passwd = password, Active = active) ])
-        |> Array.ofList
+let postDatabaseAsync (request: PostDatabase) =
+    let dbUsers =
+        request.Users
+        |> Seq.collect (fun dbUser ->
+            [| DatabaseUser(
+                   Username = dbUser.Username,
+                   Active = dbUser.Active,
+                   Passwd = dbUser.Passwd,
+                   Extra = Option.defaultValue null dbUser.Extra
+               ) |])
 
     db
         .Database
-        .PostDatabaseAsync(PostDatabaseBody(Name = newDatabaseName, Users = databaseUsers))
+        .PostDatabaseAsync(PostDatabaseBody(Name = request.Name, Users = dbUsers))
         .GetAwaiter()
         .GetResult()

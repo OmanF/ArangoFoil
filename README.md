@@ -1,42 +1,43 @@
-# ArangoF#oil - a (thin) F# wrapper around `ArangoDBNetStandard` driver #
+# ArangoF#oil - a (thin) F# wrapper around ArangoDBNetStandard driver #
 
 [ArangoDB](https://www.arangodb.com/) *has* an official [.Net driver](https://github.com/ArangoDB-Community/arangodb-net-standard), however as most things .Net, it is C#-centric.  
 Luckily, it's easy enough to provide a (thin) wrapper around that driver making it easy to call from F# code.
 
-## Mutable variables ##
+## Installation ##
 
-The official driver recommends having only a single `HttpApiTransport` for the entire life-cycle of the application.  
-(See the "Remarks" section [here](https://arangodb-community.github.io/arangodb-net-standard/v1-1-0/html/1a9b4516-9078-d867-e5f5-6a99e3f31ee4.htm)).
+The easiest way is to build the project then reference the resulting '.dll' file.  
+Another way is to clone the files of this project to your own project (in the order they appear in this project's '.fsproj' file, of course) and reference them in your own project's '.fsproj' file.
 
-This behavior lends itself nicely to a flow based on **mutable, global** variables holding the database connection details: the connection string (URL), username, password, and the actual database to connect to.
+Either way, don't forget to import this wrapper's core dependency, i.e., `ArangoDBNetStandard`, either via `dotnet` CLI or using `Paket`.  
+(As a side note, this wrapper wraps the official driver's version 1.1.1, so make sure to import this version for compatibility).
 
-The flow then proceeds as following:
-
-* Initial `HttpApiTransport` object is created blank!
-* Bind the connection using the required user and database details.
-* (If needed) create new database(s) and/or new user(s), not forgetting to give the new users correct permissions for the database(s)/collection(s) as needed.
-* (If needed) rebind the connection with the new database/user's details.
-* Repeat the flow as needed.
+It is unlikely this will ever become a Nuget package.
 
 ## Usage ##
 
-The easiest way to use this library is to copy the code files into your own projects, not forgetting to reference them in the `.fsproj` file, nor to install their dependency, i.e., the `ArangoDBNetStandard` nuget, and treat them like any other project's file/modules.
+// TODO: Write something here!
 
-Otherwise, just build the package and reference the resulting `.dll` file (again, not forgetting to install the `ArangoDBNetStandard` nuget dependency).
+## Some functionality is missing ##
 
-Some of the functions, mostly those that create or update, entities (databases, collections, documents, users, etc.) require creating, and passing, instances of the corresponding `Model` class. This in turn means the application code calling those functions will need to `open` the `Model`(s).  
-While this forcefully injects the driver's code into the application code, this is an intentional decision as I prefer to have the functions as robust, and conforming to both the C# driver, and the HTTP underlying the driver, specifications over a simpler, incomplete, function.  
-In the same vein, none of the functions support the `<API name>HeaderProperties` that some of the C#'s driver's functions offer since these instances don't manipulate the request in any way, like the options may, and the information returned by those headers is mostly useful only in debug (which would be better suited over the UI and/or `arangosh`).
+This wrapper provides **most** of the functionality provided by the official driver (which in turn offers **all** the functionality provided by ArangoDB itself).  
+I've opted to implement the functionality I've used most when learning to use the DB, leaving out the very remote functionality that's unlikely to ever be required (at least not programatically).
 
-## Some functionality is missing? ##
+If some of the missing functionality **is** required, implementing it should be fairly easy: just follow the official driver's documentation to know what parameters to pass, and the wrapper's code as example how to implement the function.
 
-The official driver has an [implementation](https://github.com/ArangoDB-Community/arangodb-net-standard/tree/master/arangodb-net-standard) for **most** of the APIs listed on [ArangoDB's HTTP page](https://www.arangodb.com/docs/stable/http/).
+## 1.0.0? ##
 
-Once an `ArangoDBClient` is created it has access to all those [APIs](https://arangodb-community.github.io/arangodb-net-standard/v1-1-0/html/ba0f435e-0803-bafd-7a3d-9963d8a82ad8.htm), manifested as the object's properties, via the usual "dot-into" mechanism (e.g. `dbClient.User`).
+I agree that tagging this wrapper with a '1.x.y' tag was a bit over the top, but following SemVer protocol, this tag is meant to convey the fact that I now consider this wrapper complete, both in features and design (both of which changed a lot during the WIP phase).
 
-Do note that some code "gymnastics" is required, especially when instantiating a class, to allow F# to call the driver's C# code.
+## Contributing ##
 
-(On that note, PRs are welcome, thank you very much.)
+The general way of doing FOSS applies here too:
+
+* Fork the repo.
+* Do your thing.
+* Send a PR.
+
+I don't have any strict coding standards, per-se. Just look at the current code and follow suit and it'll be fine.  
+(Do use `Fantomas` though. I love that tool, it's the best!)
 
 ## The name? ##
 
