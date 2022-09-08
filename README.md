@@ -1,5 +1,23 @@
 # ArangoF#oil - a (thin) F# wrapper around `ArangoDBNetStandard` driver #
 
+## Archived! ##
+
+The work on `master` branch is unsatisfactory to my tastes.  
+Work on the `experiments` branch is promising but still has lots of issues I just don't know how to circumvent.
+
+I have exhausted all the paths I could think about, and I'm done Google-ing.
+
+The easiest way to use the **official** driver from F# is simply to import it to your project and instansiate its classes as needed.  
+It means a lot of `open ArangoDBNetStandard.<ApiName>.Models` in your application code, yes, but it works.  
+This wrapper tried to remove this ugly code requirement, but sometimes it's just easier to do something ugly that works than beautiful that is just too much work.
+
+If anyone has any idea how to improve on either the code in the `master`, or `expriments` branch, I'd love some PRs.
+
+I'm done with this wrapper. At least for now.  
+If you do find some use in it, I'm happy.
+
+## What is it ##
+
 [ArangoDB](https://www.arangodb.com/) *has* an official [.Net driver](https://github.com/ArangoDB-Community/arangodb-net-standard), however as most things .Net, it is C#-centric.  
 Luckily, it's easy enough to provide a (thin) wrapper around that driver making it easy to call from F# code.
 
