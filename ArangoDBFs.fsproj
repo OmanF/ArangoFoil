@@ -4,7 +4,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="helperFunctions.fs" />
     <Compile Include="connectionDetails.fs" />
     <Compile Include="users.fs" />
     <Compile Include="databases.fs" />

@@ -1,509 +1,147 @@
-module Documents
+namespace Documents
 
-open System
-open HelperFunctions
 open ConnectionDetails
-open ArangoDBNetStandard.DocumentApi.Models
-open ArangoDBNetStandard.Serialization
 
-type UnofficialDeleteDocumentQuery =
-    { ReturnOld: Nullable<bool>
-      Silent: Nullable<bool>
-      WaitForSync: Nullable<bool> }
+type Documents =
+    static member deleteDocumentAsync(documentId, ?query, ?headers) =
+        let query = defaultArg query null
+        let headers = defaultArg headers null
 
-type UnofficialDeleteDocumentsQuery =
-    { IgnoreRevs: Nullable<bool>
-      ReturnOld: Nullable<bool>
-      Silent: Nullable<bool>
-      WaitForSync: Nullable<bool> }
+        db
+            .Document
+            .DeleteDocumentAsync(documentId, query, headers)
+            .GetAwaiter()
+            .GetResult()
 
-type UnofficialPatchDocumentQuery =
-    { IgnoreRevs: Nullable<bool>
-      KeepNull: Nullable<bool>
-      MergeObjects: Nullable<bool>
-      ReturnNew: Nullable<bool>
-      ReturnOld: Nullable<bool>
-      Silent: Nullable<bool>
-      WaitForSync: Nullable<bool> }
+    static member deleteDocumentAsync(collectionName, documentKey, ?query, ?headers) =
+        let query = defaultArg query null
+        let headers = defaultArg headers null
 
-type UnofficialPostDocumentsQuery =
-    { Overwrite: Nullable<bool>
-      ReturnNew: Nullable<bool>
-      ReturnOld: Nullable<bool>
-      Silent: Nullable<bool>
-      WaitForSync: Nullable<bool> }
+        db
+            .Document
+            .DeleteDocumentAsync(collectionName, documentKey, query, headers)
+            .GetAwaiter()
+            .GetResult()
 
-type UnofficialPutDocumentQuery =
-    { IgnoreRevs: Nullable<bool>
-      ReturnNew: Nullable<bool>
-      ReturnOld: Nullable<bool>
-      Silent: Nullable<bool>
-      WaitForSync: Nullable<bool> }
+    static member deleteDocumentsAsync(collectionName, selectors, ?query, ?headers) =
+        let query = defaultArg query null
+        let headers = defaultArg headers null
 
-type UnofficialDocumentHeaders =
-    { IfMatch: string
-      IfNoneMatch: string
-      TransactionId: string }
+        db
+            .Document
+            .DeleteDocumentsAsync(collectionName, selectors, query, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let deleteDocumentByIdAsync
-    documentId
-    (query: UnofficialDeleteDocumentQuery option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let query =
-        Option.defaultValue Unchecked.defaultof<UnofficialDeleteDocumentQuery> query
+    static member getDocumentAsync<'T>(documentId, ?headers) =
+        let headers = defaultArg headers null
 
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
+        db
+            .Document
+            .GetDocumentAsync<'T>(documentId, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .Document
-        .DeleteDocumentAsync(
-            documentId,
-            DeleteDocumentQuery(ReturnOld = query.ReturnOld, Silent = query.Silent, WaitForSync = query.WaitForSync),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
+    static member getDocumentAsync<'T>(collectionName, documentKey, ?headers) =
+        let headers = defaultArg headers null
 
-let deleteDocumentByCollectionKeyAsync
-    collectionName
-    documentKey
-    (query: UnofficialDeleteDocumentQuery option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let query =
-        Option.defaultValue Unchecked.defaultof<UnofficialDeleteDocumentQuery> query
+        db
+            .Document
+            .GetDocumentAsync<'T>(collectionName, documentKey, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
+    static member getDocumentsAsync<'T>(collectionName, selectors, ?headers) =
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .DeleteDocumentAsync(
-            collectionName,
-            documentKey,
-            DeleteDocumentQuery(ReturnOld = query.ReturnOld, Silent = query.Silent, WaitForSync = query.WaitForSync),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .GetDocumentsAsync<'T>(collectionName, selectors, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let deleteDocumentsAsync
-    collectionName
-    (selectors: Collections.Generic.IList<string>)
-    (query: UnofficialDeleteDocumentsQuery option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let query =
-        Option.defaultValue Unchecked.defaultof<UnofficialDeleteDocumentsQuery> query
+    static member patchDocumentAsync<'T, 'U>(documentId, (body: 'T), ?query, ?apiSerOpts, ?headers) =
+        let query = defaultArg query null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
+        db
+            .Document
+            .PatchDocumentAsync<'T, 'U>(documentId, body, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .Document
-        .DeleteDocumentsAsync(
-            collectionName,
-            selectors,
-            DeleteDocumentsQuery(
-                IgnoreRevs = query.IgnoreRevs,
-                ReturnOld = query.ReturnOld,
-                Silent = query.Silent,
-                WaitForSync = query.WaitForSync
-            ),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
+    static member patchDocumentAsync<'T, 'U>(collectionName, documentKey, (body: 'T), ?query, ?headers) =
+        let query = defaultArg query null
+        let headers = defaultArg headers null
 
-let getDocumentByIdAsync<'T> documentId (headers: UnofficialDocumentHeaders option) =
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
+        db
+            .Document
+            .PatchDocumentAsync<'T, 'U>(collectionName, documentKey, body, query, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .Document
-        .GetDocumentAsync<'T>(
-            documentId,
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
+    static member patchDocumentsAsync<'T, 'U>(collectionName, patches, ?query, ?apiSerOpts, ?headers) =
+        let headers = defaultArg headers null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let query = defaultArg query null
 
-let getDocumentByCollectionKeyAsync<'T> collectionName documentKey (headers: UnofficialDocumentHeaders option) =
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
+        db
+            .Document
+            .PatchDocumentsAsync<'T, 'U>(collectionName, patches, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .Document
-        .GetDocumentAsync<'T>(
-            collectionName,
-            documentKey,
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
+    static member postDocumentAsync<'T>(collectionName, (document: 'T), ?query, ?apiSerOpts, ?headers) =
+        let query = defaultArg query null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-let getDocumentsAsync<'T> collectionName selectors (headers: UnofficialDocumentHeaders option) =
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
+        db
+            .Document
+            .PostDocumentAsync<'T>(collectionName, document, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .Document
-        .GetDocumentsAsync<'T>(
-            collectionName,
-            selectors,
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
+    static member postDocumentsAsync<'T>(collectionName, documents, ?query, ?apiSerOpts, ?headers) =
+        let query = defaultArg query null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-let patchDocumentByIdAsync<'T, 'U>
-    documentId
-    (body: 'T)
-    (query: UnofficialPatchDocumentQuery option)
-    (apiSerOpts: UnofficialApiClientSerializationOptions option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let query =
-        Option.defaultValue Unchecked.defaultof<UnofficialPatchDocumentQuery> query
+        db
+            .Document
+            .PostDocumentsAsync<'T>(collectionName, documents, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    let apiSerOpts =
-        Option.defaultValue Unchecked.defaultof<UnofficialApiClientSerializationOptions> apiSerOpts
+    static member putDocumentAsync<'T>(documentId, (doc: 'T), ?opts, ?apiSerOpts, ?headers) =
+        let opts = defaultArg opts null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
+        db
+            .Document
+            .PutDocumentAsync<'T>(documentId, doc, opts, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .Document
-        .PatchDocumentAsync(
-            documentId,
-            body,
-            PatchDocumentQuery(
-                IgnoreRevs = query.IgnoreRevs,
-                KeepNull = query.KeepNull,
-                MergeObjects = query.MergeObjects,
-                ReturnNew = query.ReturnNew,
-                ReturnOld = query.ReturnOld,
-                Silent = query.Silent,
-                WaitForSync = query.WaitForSync
-            ),
-            ApiClientSerializationOptions(
-                ignoreNullValues = apiSerOpts.IgnoreNullValues,
-                useCamelCasePropertyNames = apiSerOpts.UseCamelCasePropertyNames,
-                useStringEnumConversion = apiSerOpts.UseStringEnumConversion
-            ),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
+    static member putDocumentAsync<'T>(collectionName, documentKey, (doc: 'T), ?opts, ?headers) =
+        let opts = defaultArg opts null
+        let headers = defaultArg headers null
 
-let patchDocumentByCollectionKeyAsync<'T, 'U>
-    collectionName
-    documentKey
-    (body: 'T)
-    (query: UnofficialPatchDocumentQuery option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let query =
-        Option.defaultValue Unchecked.defaultof<UnofficialPatchDocumentQuery> query
+        db
+            .Document
+            .PutDocumentAsync<'T>(collectionName, documentKey, doc, opts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
+    static member putDocumentsAsync<'T>(collectionName, documents, ?query, ?apiSerOpts, ?headers) =
+        let query = defaultArg query null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .PatchDocumentAsync(
-            collectionName,
-            documentKey,
-            body,
-            PatchDocumentQuery(
-                IgnoreRevs = query.IgnoreRevs,
-                KeepNull = query.KeepNull,
-                MergeObjects = query.MergeObjects,
-                ReturnNew = query.ReturnNew,
-                ReturnOld = query.ReturnOld,
-                Silent = query.Silent,
-                WaitForSync = query.WaitForSync
-            ),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
-
-let patchDocumentsAsync<'T>
-    collectionName
-    (patches: Collections.Generic.IList<'T>)
-    (query: UnofficialPatchDocumentQuery option)
-    (apiSerOpts: UnofficialApiClientSerializationOptions option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
-
-    let apiSerOpts =
-        Option.defaultValue Unchecked.defaultof<UnofficialApiClientSerializationOptions> apiSerOpts
-
-    let query =
-        Option.defaultValue Unchecked.defaultof<UnofficialPatchDocumentQuery> query
-
-    db
-        .Document
-        .PatchDocumentsAsync(
-            collectionName,
-            patches,
-            PatchDocumentsQuery(
-                IgnoreRevs = query.IgnoreRevs,
-                KeepNull = query.KeepNull,
-                MergeObjects = query.MergeObjects,
-                ReturnNew = query.ReturnNew,
-                ReturnOld = query.ReturnOld,
-                Silent = query.Silent,
-                WaitForSync = query.WaitForSync
-            ),
-            ApiClientSerializationOptions(
-                ignoreNullValues = apiSerOpts.IgnoreNullValues,
-                useCamelCasePropertyNames = apiSerOpts.UseCamelCasePropertyNames,
-                useStringEnumConversion = apiSerOpts.UseStringEnumConversion
-            ),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
-
-let postDocumentAsync<'T>
-    collectionName
-    (document: 'T)
-    (query: UnofficialPostDocumentsQuery option)
-    (apiSerOpts: UnofficialApiClientSerializationOptions option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let query =
-        Option.defaultValue Unchecked.defaultof<UnofficialPostDocumentsQuery> query
-
-    let apiSerOpts =
-        Option.defaultValue Unchecked.defaultof<UnofficialApiClientSerializationOptions> apiSerOpts
-
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
-
-    db
-        .Document
-        .PostDocumentAsync<'T>(
-            collectionName,
-            document,
-            PostDocumentsQuery(
-                Overwrite = query.Overwrite,
-                ReturnNew = query.ReturnNew,
-                ReturnOld = query.ReturnOld,
-                Silent = query.Silent,
-                WaitForSync = query.WaitForSync
-            ),
-            ApiClientSerializationOptions(
-                ignoreNullValues = apiSerOpts.IgnoreNullValues,
-                useCamelCasePropertyNames = apiSerOpts.UseCamelCasePropertyNames,
-                useStringEnumConversion = apiSerOpts.UseStringEnumConversion
-            ),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
-
-let postDocumentsAsync<'T>
-    collectionName
-    (documents: Collections.Generic.IList<'T>)
-    (query: UnofficialPostDocumentsQuery option)
-    (apiSerOpts: UnofficialApiClientSerializationOptions option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let query =
-        Option.defaultValue Unchecked.defaultof<UnofficialPostDocumentsQuery> query
-
-    let apiSerOpts =
-        Option.defaultValue Unchecked.defaultof<UnofficialApiClientSerializationOptions> apiSerOpts
-
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
-
-    db
-        .Document
-        .PostDocumentsAsync<'T>(
-            collectionName,
-            documents,
-            PostDocumentsQuery(
-                Overwrite = query.Overwrite,
-                ReturnNew = query.ReturnNew,
-                ReturnOld = query.ReturnOld,
-                Silent = query.Silent,
-                WaitForSync = query.WaitForSync
-            ),
-            ApiClientSerializationOptions(
-                ignoreNullValues = apiSerOpts.IgnoreNullValues,
-                useCamelCasePropertyNames = apiSerOpts.UseCamelCasePropertyNames,
-                useStringEnumConversion = apiSerOpts.UseStringEnumConversion
-            ),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
-
-let putDocumentByIdAsync<'T>
-    documentId
-    (doc: 'T)
-    (opts: UnofficialPutDocumentQuery option)
-    (apiSerOpts: UnofficialApiClientSerializationOptions option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let opts = Option.defaultValue Unchecked.defaultof<UnofficialPutDocumentQuery> opts
-
-    let apiSerOpts =
-        Option.defaultValue Unchecked.defaultof<UnofficialApiClientSerializationOptions> apiSerOpts
-
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
-
-    db
-        .Document
-        .PutDocumentAsync(
-            documentId,
-            doc,
-            PutDocumentQuery(
-                IgnoreRevs = opts.IgnoreRevs,
-                ReturnNew = opts.ReturnNew,
-                ReturnOld = opts.ReturnOld,
-                Silent = opts.Silent,
-                WaitForSync = opts.WaitForSync
-            ),
-            ApiClientSerializationOptions(
-                ignoreNullValues = apiSerOpts.IgnoreNullValues,
-                useCamelCasePropertyNames = apiSerOpts.UseCamelCasePropertyNames,
-                useStringEnumConversion = apiSerOpts.UseStringEnumConversion
-            ),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
-
-let putDocumentByCollectionKeyAsync<'T>
-    collectionName
-    documentKey
-    (doc: 'T)
-    (opts: UnofficialPutDocumentQuery option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let opts = Option.defaultValue Unchecked.defaultof<UnofficialPutDocumentQuery> opts
-
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
-
-    db
-        .Document
-        .PutDocumentAsync(
-            collectionName,
-            documentKey,
-            doc,
-            PutDocumentQuery(
-                IgnoreRevs = opts.IgnoreRevs,
-                ReturnNew = opts.ReturnNew,
-                ReturnOld = opts.ReturnOld,
-                Silent = opts.Silent,
-                WaitForSync = opts.WaitForSync
-            ),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
-
-let putDocumentsAsync<'T>
-    collectionName
-    (documents: Collections.Generic.IList<'T>)
-    (query: UnofficialPutDocumentQuery option)
-    (apiSerOpts: UnofficialApiClientSerializationOptions option)
-    (headers: UnofficialDocumentHeaders option)
-    =
-    let query =
-        Option.defaultValue Unchecked.defaultof<UnofficialPutDocumentQuery> query
-
-    let apiSerOpts =
-        Option.defaultValue Unchecked.defaultof<UnofficialApiClientSerializationOptions> apiSerOpts
-
-    let headers =
-        Option.defaultValue Unchecked.defaultof<UnofficialDocumentHeaders> headers
-
-    db
-        .Document
-        .PutDocumentsAsync(
-            collectionName,
-            documents,
-            PutDocumentsQuery(
-                IgnoreRevs = query.IgnoreRevs,
-                ReturnNew = query.ReturnNew,
-                ReturnOld = query.ReturnOld,
-                Silent = query.Silent,
-                WaitForSync = query.WaitForSync
-            ),
-            ApiClientSerializationOptions(
-                ignoreNullValues = apiSerOpts.IgnoreNullValues,
-                useCamelCasePropertyNames = apiSerOpts.UseCamelCasePropertyNames,
-                useStringEnumConversion = apiSerOpts.UseStringEnumConversion
-            ),
-            DocumentHeaderProperties(
-                IfMatch = headers.IfMatch,
-                IfNoneMatch = headers.IfNoneMatch,
-                TransactionId = headers.TransactionId
-            )
-        )
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .PutDocumentsAsync<'T>(collectionName, documents, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()

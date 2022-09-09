@@ -1,44 +1,70 @@
 # ArangoF#oil - a (thin) F# wrapper around ArangoDBNetStandard driver #
 
-[ArangoDB](https://www.arangodb.com/) *has* an official [.Net driver](https://github.com/ArangoDB-Community/arangodb-net-standard), however as most things .Net, it is C#-centric.  
-Luckily, it's easy enough to provide a (thin) wrapper around that driver making it easy to call from F# code.
+[ArangoDB](https://www.arangodb.com/) does have an official [.Net driver](https://github.com/ArangoDB-Community/arangodb-net-standard), however as most things .Net, it is C# centric.  
+Luckily, it's possible to provide a (thin) F# wrapper around that driver.
 
 ## Installation ##
 
-The easiest way is to build the project then reference the resulting '.dll' file.  
-Another way is to clone the files of this project to your own project (in the order they appear in this project's '.fsproj' file, of course) and reference them in your own project's '.fsproj' file.
+The easiest way is to build the project then reference the resulting `.dll` file.  
+Another way is to clone the files of this project to your own project (in the order they appear in this project's `.fsproj` file, of course) and reference them in your own project.  
+(I'm sorry, but it's not likely this will ever be made into a `Nuget` package).
 
-Either way, don't forget to import this wrapper's core dependency, i.e., `ArangoDBNetStandard`, either via `dotnet` CLI or using `Paket`.  
-(As a side note, this wrapper wraps the official driver's version 1.1.1, so make sure to import this version for compatibility).
-
-It is unlikely this will ever become a Nuget package.
+Either way, **don't forget to add and reference this wrapper's core dependency** - `ArangoDBNetStandard`.  
+This wrapper wraps the official driver's version 1.1.1.
 
 ## Usage ##
 
-// TODO: Write something here!
+The names of each file/namespace correspond to the name of an official driver's API.  
+Within each namespace, the names of the **methods** match the corresponding driver API's methods, albeit in *camelCase* syntax (opposed to the official driver's PascalCase).
+
+One caveat, however, is that some of the methods, mostly `POST`, `PUT` and `PATCH`, but not limited to those, require, or take as optional parameters, ArangoDB-specific objects.  
+For example, `Document`'s `postDocumentAsync<'T>` method takes an optional parameter, `query` (*among others*), of type `PostDocumentQuery` which is available in `ArangoDBNetStandard.DocumentApi.Models` module.
+
+The (sad) implication of this is that your **application** code will require `open`-ing ArangoDB-specific modules, for example:
+
+```fsharp
+// File: MyApp.fs
+module MyApp
+
+// Opening and setting up required application data...
+// Followed by opening the wrapper's `Document` namespace and its supporting ArangoDB modules.
+open Document
+open ArangoDBNetStandard.DocumentApi.Models
+
+// Application code...
+// Followed by calling the 'postDocumentAsync<'T>' method.
+// Notice that since it's a static member, we need to use the dot-notation with a fully-qualified class name.
+Document.postDocumentAsync<MyDocumentType>(collectionName, document, PostDocumentQuery(Overwrite = true, Silent = true))
+```
+
+You'll need to consult the official driver's documentation to see what type of parameters each of the methods take, and what are each method's applicable properties.
+
+(You can checkout the `experiments` branch to see how I'd liked the API to behave, but couldn't figure out how to make it happen. Did I mention I take PRs?!)
 
 ## Some functionality is missing ##
 
 This wrapper provides **most** of the functionality provided by the official driver (which in turn offers **all** the functionality provided by ArangoDB itself).  
-I've opted to implement the functionality I've used most when learning to use the DB, leaving out the very remote functionality that's unlikely to ever be required (at least not programatically).
+I've opted to implement the functionality I've used most when learning to use the DB, leaving out the very remote functionality that's unlikely to ever be required.
 
 If some of the missing functionality **is** required, implementing it should be fairly easy: just follow the official driver's documentation to know what parameters to pass, and the wrapper's code as example how to implement the function.
 
-## 1.0.0? ##
+## Status ##
 
-I agree that tagging this wrapper with a '1.x.y' tag was a bit over the top, but following SemVer protocol, this tag is meant to convey the fact that I now consider this wrapper complete, both in features and design (both of which changed a lot during the WIP phase).
+Despite some of the functionality missing (see previous section), I now consider this wrapper complete, both in features and design.  
+Following the Semver protocol, this wrapper is now tagged `1.0.0` and will **not** receive any modification other than bug fixes, unless the official driver's code changes.
 
 ## Contributing ##
 
-The general way of doing FOSS applies here too:
+The usual way of doing FOSS applies:
 
 * Fork the repo.
 * Do your thing.
 * Send a PR.
 
-I don't have any strict coding standards, per-se. Just look at the current code and follow suit and it'll be fine.  
-(Do use `Fantomas` though. I love that tool, it's the best!)
+I don't have any strict coding standards per-se, other than using the latest *stable* version of `Fantomas`.  
+Just mimic the current code style and it'll be fine.
 
-## The name? ##
+## The name ##
 
-(Tin)foil can be used to wrap materials. F#oil wraps .Net materials into something usable by F#. :smile:
+Foil is used to wrap materials.  
+By that token, F#oil wraps C# code into code usable from F#. :smile:
