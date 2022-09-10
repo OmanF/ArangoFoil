@@ -1,107 +1,70 @@
-module Users
+namespace Users
 
-open ArangoDBNetStandard.UserApi.Models
 open ConnectionDetails
-open System.Collections.Generic
 
-type AccessLevel =
-    | NotAuthorized
-    | ReadOnly
-    | ReadWrite
+type Users =
+    static member deleteCollectionAccessAsync(username, dbName, collectionName) =
+        db
+            .User
+            .DeleteCollectionAccessLevelAsync(username, dbName, collectionName)
+            .GetAwaiter()
+            .GetResult()
 
-let accessLevelClassifierHelperFunction accessLevel =
-    accessLevel
-    |> function
-        | NotAuthorized -> "none"
-        | ReadOnly -> "ro"
-        | ReadWrite -> "rw"
+    static member deleteDatabaseAccessAsync(username, dbName) =
+        db
+            .User
+            .DeleteDatabaseAccessLevelAsync(username, dbName)
+            .GetAwaiter()
+            .GetResult()
 
-let deleteCollectionAccessAsync userName database collection =
-    db
-        .User
-        .DeleteCollectionAccessLevelAsync(
-            userName,
-            database,
-            collection
-        )
-        .GetAwaiter()
-        .GetResult
+    static member deleteUserAsync(username) =
+        db
+            .User
+            .DeleteUserAsync(username)
+            .GetAwaiter()
+            .GetResult()
 
-let deleteDatabaseAccessAsync userName database =
-    db
-        .User
-        .DeleteDatabaseAccessLevelAsync(userName, database)
-        .GetAwaiter()
-        .GetResult()
+    static member getUserAsync(username) =
+        db
+            .User
+            .GetUserAsync(username)
+            .GetAwaiter()
+            .GetResult()
 
-let deleteUserAsync userName =
-    db
-        .User
-        .DeleteUserAsync(userName)
-        .GetAwaiter()
-        .GetResult()
+    static member getUsersAsync() =
+        db.User.GetUsersAsync().GetAwaiter().GetResult()
 
-let getUserAsync userName =
-    db
-        .User
-        .GetUserAsync(userName)
-        .GetAwaiter()
-        .GetResult()
+    static member patchUserAsync(username, body) =
+        db
+            .User
+            .PatchUserAsync(username, body)
+            .GetAwaiter()
+            .GetResult()
 
-let getUsersAsync () =
-    db.User.GetUsersAsync().GetAwaiter().GetResult()
+    static member postUserAsync(body) =
+        db
+            .User
+            .PostUserAsync(body)
+            .GetAwaiter()
+            .GetResult()
 
-let patchUserAsync userName (newUserMetadata: (string * bool * Dictionary<string, obj>)) =
-    let password, active, extra = newUserMetadata
-    let patchedUser = PatchUserBody(Passwd = password, Active = active, Extra = extra)
+    static member putCollectionAccessAsync(username, dbName, collectionName, body) =
+        db
+            .User
+            .PutCollectionAccessLevelAsync(username, dbName, collectionName, body)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .User
-        .PatchUserAsync(userName, patchedUser)
-        .GetAwaiter()
-        .GetResult()
+    static member putDatabaseAccessAsync(username, dbName, body) =
+        db
+            .User
+            .PutDatabaseAccessLevelAsync(username, dbName, body)
+            .GetAwaiter()
+            .GetResult()
 
-let postUserAsync (newUserMetadata: (string * string * bool * Dictionary<string, obj>)) =
-    let userName, password, active, extra = newUserMetadata
-
-    let newUser =
-        PostUserBody(User = userName, Passwd = password, Active = active, Extra = extra)
-
-    db
-        .User
-        .PostUserAsync(newUser)
-        .GetAwaiter()
-        .GetResult()
-
-let putCollectionAccessAsync userName database collection accessLevel =
-    let access = accessLevelClassifierHelperFunction accessLevel
-
-    db
-        .User
-        .PutCollectionAccessLevelAsync(
-            userName,
-            database,
-            collection,
-            PutAccessLevelBody(Grant = access)
-        )
-        .GetAwaiter()
-        .GetResult
-
-let putDatabaseAccessAsync userName database accessLevel =
-    let access = accessLevelClassifierHelperFunction accessLevel
-
-    db
-        .User
-        .PutDatabaseAccessLevelAsync(userName, database, PutAccessLevelBody(Grant = access))
-        .GetAwaiter()
-        .GetResult()
-
-let putUserAsync userName (newUserMetadata: (string * bool * Dictionary<string, obj>)) =
-    let password, active, extra = newUserMetadata
-    let replacedUser = PutUserBody(Passwd = password, Active = active, Extra = extra)
-
-    db
-        .User
-        .PutUserAsync(userName, replacedUser)
-        .GetAwaiter()
-        .GetResult()
+    static member putUserAsync(username, body) =
+        db
+            .User
+            .PutUserAsync(username, body)
+            .GetAwaiter()
+            .GetResult()

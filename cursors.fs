@@ -1,25 +1,27 @@
-module Cursors
+namespace Cursors
 
-open ArangoDBNetStandard.CursorApi.Models
 open ConnectionDetails
 
-let deleteCursorAsync cursorId =
-    db
-        .Cursor
-        .DeleteCursorAsync(cursorId)
-        .GetAwaiter()
-        .GetResult()
+type Cursors =
+    static member deleteCursorAsync(cursorId) =
+        db
+            .Cursor
+            .DeleteCursorAsync(cursorId)
+            .GetAwaiter()
+            .GetResult()
 
-let postCursorAsync<'T> (cursorBody: PostCursorBody) =
-    db
-        .Cursor
-        .PostCursorAsync<'T>(cursorBody)
-        .GetAwaiter()
-        .GetResult()
+    static member postCursorAsync<'T>(postCursorBody, ?headers) =
+        let headers = defaultArg headers null
 
-let putCursorAsync<'T> cursorId =
-    db
-        .Cursor
-        .PutCursorAsync<'T>(cursorId)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Cursor
+            .PostCursorAsync<'T>(postCursorBody, headers)
+            .GetAwaiter()
+            .GetResult()
+
+    static member putCursorAsync<'T>(cursorId) =
+        db
+            .Cursor
+            .PutCursorAsync<'T>(cursorId)
+            .GetAwaiter()
+            .GetResult()

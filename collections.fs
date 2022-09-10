@@ -1,54 +1,50 @@
-module Collections
+namespace Collections
 
-open ArangoDBNetStandard.CollectionApi.Models
 open ConnectionDetails
 
-let deleteCollectionAsync collectionName =
-    db
-        .Collection
-        .DeleteCollectionAsync(collectionName)
-        .GetAwaiter()
-        .GetResult()
+type Collections =
+    static member deleteCollectionAsync(collectionName) =
+        db
+            .Collection
+            .DeleteCollectionAsync(collectionName)
+            .GetAwaiter()
+            .GetResult()
 
-let getCollectionAsync collectionName =
-    db
-        .Collection
-        .GetCollectionAsync(collectionName)
-        .GetAwaiter()
-        .GetResult()
+    static member getCollectionAsync(collectionName) =
+        db
+            .Collection
+            .GetCollectionAsync(collectionName)
+            .GetAwaiter()
+            .GetResult()
 
-let getCollectionsAsync excludeSystems =
-    db
-        .Collection
-        .GetCollectionsAsync(GetCollectionsQuery(ExcludeSystem = excludeSystems))
-        .GetAwaiter()
-        .GetResult()
+    static member getCollectionsAsync(?query) =
+        let query = defaultArg query null
 
-let postCollectionAsync
-    (newCollectionMetadata: PostCollectionBody)
-    (createCollectionQueryOption: PostCollectionQuery option)
-    =
-    let ccq =
-        match createCollectionQueryOption with
-        | Some ccq -> ccq
-        | None -> null
+        db
+            .Collection
+            .GetCollectionsAsync(query)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .Collection
-        .PostCollectionAsync(newCollectionMetadata, ccq)
-        .GetAwaiter()
-        .GetResult()
+    static member postCollectionAsync(body, ?options) =
+        let options = defaultArg options null
 
-let renameCollectionAsync currentCollection newCollectionName =
-    db
-        .Collection
-        .RenameCollectionAsync(currentCollection, RenameCollectionBody(Name = newCollectionName))
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Collection
+            .PostCollectionAsync(body, options)
+            .GetAwaiter()
+            .GetResult()
 
-let truncateCollectionAsync collectionName =
-    db
-        .Collection
-        .TruncateCollectionAsync(collectionName)
-        .GetAwaiter()
-        .GetResult()
+    static member renameCollectionAsync(collectionName, body) =
+        db
+            .Collection
+            .RenameCollectionAsync(collectionName, body)
+            .GetAwaiter()
+            .GetResult()
+
+    static member truncateCollectionAsync(collectionName) =
+        db
+            .Collection
+            .TruncateCollectionAsync(collectionName)
+            .GetAwaiter()
+            .GetResult()

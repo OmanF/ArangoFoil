@@ -1,60 +1,62 @@
-module Views
+namespace Views
 
-open ArangoDBNetStandard.ViewApi.Models
 open ConnectionDetails
 
-let deleteViewAsync viewName =
-    db
-        .View
-        .DeleteViewAsync(viewName)
-        .GetAwaiter()
-        .GetResult()
+type Views =
+    static member deleteViewAsync(viewNameOrId) =
+        db
+            .View
+            .DeleteViewAsync(viewNameOrId)
+            .GetAwaiter()
+            .GetResult()
 
-let getAllViewsAsync () =
-    db
-        .View
-        .GetAllViewsAsync()
-        .GetAwaiter()
-        .GetResult()
+    static member getAllViewsAsync() =
+        db
+            .View
+            .GetAllViewsAsync()
+            .GetAwaiter()
+            .GetResult()
 
-let getViewAsync viewName =
-    db
-        .View
-        .GetViewAsync(viewName)
-        .GetAwaiter()
-        .GetResult()
+    static member getViewAsync(viewNameOrId) =
+        db
+            .View
+            .GetViewAsync(viewNameOrId)
+            .GetAwaiter()
+            .GetResult()
 
-let getViewPropertiesAsync viewName =
-    db
-        .View
-        .GetViewPropertiesAsync(viewName)
-        .GetAwaiter()
-        .GetResult()
+    static member getViewPropertiesAsync(viewNameOrId) =
+        db
+            .View
+            .GetViewPropertiesAsync(viewNameOrId)
+            .GetAwaiter()
+            .GetResult()
 
-let patchViewPropertiesAsync viewName (viewMetadata: ViewDetails) =
-    db
-        .View
-        .PatchViewPropertiesAsync(viewName, viewMetadata)
-        .GetAwaiter()
-        .GetResult()
+    static member patchViewPropertiesAsync(viewNameOrId, ?body) =
+        let body = defaultArg body null
 
-let postViewAsync (viewMetadata: ViewDetails) =
-    db
-        .View
-        .PostCreateViewAsync(viewMetadata)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .View
+            .PatchViewPropertiesAsync(viewNameOrId, body)
+            .GetAwaiter()
+            .GetResult()
 
-let putViewAsync viewName newViewName =
-    db
-        .View
-        .PutRenameViewAsync(viewName, PutRenameViewBody(Name = newViewName))
-        .GetAwaiter()
-        .GetResult()
+    static member postCreateViewAsync(body) =
+        db
+            .View
+            .PostCreateViewAsync(body)
+            .GetAwaiter()
+            .GetResult()
 
-let putViewPropertiesAsync viewName (viewMetadata: ViewDetails) =
-    db
-        .View
-        .PutViewPropertiesAsync(viewName, viewMetadata)
-        .GetAwaiter()
-        .GetResult()
+    static member putRenameViewAsync(viewName, body) =
+        db
+            .View
+            .PutRenameViewAsync(viewName, body)
+            .GetAwaiter()
+            .GetResult()
+
+    static member putViewPropertiesAsync(viewName, body) =
+        db
+            .View
+            .PutViewPropertiesAsync(viewName, body)
+            .GetAwaiter()
+            .GetResult()

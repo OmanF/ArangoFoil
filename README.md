@@ -1,61 +1,70 @@
-# ArangoF#oil - a (thin) F# wrapper around `ArangoDBNetStandard` driver #
+# ArangoF#oil - a (thin) F# wrapper around ArangoDBNetStandard driver #
 
-## Archived! ##
+[ArangoDB](https://www.arangodb.com/) does have an official [.Net driver](https://github.com/ArangoDB-Community/arangodb-net-standard), however as most things .Net, it is C# centric.  
+Luckily, it's possible to provide a (thin) F# wrapper around that driver.
 
-The work on `master` branch is unsatisfactory to my tastes.  
-Work on the `experiments` branch is promising but still has lots of issues I just don't know how to circumvent.
+## Installation ##
 
-I have exhausted all the paths I could think about, and I'm done Google-ing.
+The easiest way is to build the project then reference the resulting `.dll` file.  
+Another way is to clone the files of this project to your own project (in the order they appear in this project's `.fsproj` file, of course) and reference them in your own project.  
+(I'm sorry, but it's not likely this will ever be made into a `Nuget` package).
 
-The easiest way to use the **official** driver from F# is simply to import it to your project and instansiate its classes as needed.  
-It means a lot of `open ArangoDBNetStandard.<ApiName>.Models` in your application code, yes, but it works.  
-This wrapper tried to remove this ugly code requirement, but sometimes it's just easier to do something ugly that works than beautiful that is just too much work.
-
-If anyone has any idea how to improve on either the code in the `master`, or `expriments` branch, I'd love some PRs.
-
-I'm done with this wrapper. At least for now.  
-If you do find some use in it, I'm happy.
-
-## What is it ##
-
-[ArangoDB](https://www.arangodb.com/) *has* an official [.Net driver](https://github.com/ArangoDB-Community/arangodb-net-standard), however as most things .Net, it is C#-centric.  
-Luckily, it's easy enough to provide a (thin) wrapper around that driver making it easy to call from F# code.
-
-## Mutable variables ##
-
-The official driver recommends having only a single `HttpApiTransport` for the entire life-cycle of the application.  
-(See the "Remarks" section [here](https://arangodb-community.github.io/arangodb-net-standard/v1-1-0/html/1a9b4516-9078-d867-e5f5-6a99e3f31ee4.htm)).
-
-This behavior lends itself nicely to a flow based on **mutable, global** variables holding the database connection details: the connection string (URL), username, password, and the actual database to connect to.
-
-The flow then proceeds as following:
-
-* Initial `HttpApiTransport` object is created blank!
-* Bind the connection using the required user and database details.
-* (If needed) create new database(s) and/or new user(s), not forgetting to give the new users correct permissions for the database(s)/collection(s) as needed.
-* (If needed) rebind the connection with the new database/user's details.
-* Repeat the flow as needed.
+Either way, **don't forget to add and reference this wrapper's core dependency** - `ArangoDBNetStandard`.  
+This wrapper wraps the official driver's version 1.1.1.
 
 ## Usage ##
 
-The easiest way to use this library is to copy the code files into your own projects, not forgetting to reference them in the `.fsproj` file, nor to install their dependency, i.e., the `ArangoDBNetStandard` nuget, and treat them like any other project's file/modules.
+The names of each file/namespace correspond to the name of an official driver's API.  
+Within each namespace, the names of the **methods** match the corresponding driver API's methods, albeit in *camelCase* syntax (opposed to the official driver's PascalCase).
 
-Otherwise, just build the package and reference the resulting `.dll` file (again, not forgetting to install the `ArangoDBNetStandard` nuget dependency).
+One caveat, however, is that some of the methods, mostly `POST`, `PUT` and `PATCH`, but not limited to those, require, or take as optional parameters, ArangoDB-specific objects.  
+For example, `Document`'s `postDocumentAsync<'T>` method takes an optional parameter, `query` (*among others*), of type `PostDocumentQuery` which is available in `ArangoDBNetStandard.DocumentApi.Models` module.
 
-Some of the functions, mostly those that create or update, entities (databases, collections, documents, users, etc.) require creating, and passing, instances of the corresponding `Model` class. This in turn means the application code calling those functions will need to `open` the `Model`(s).  
-While this forcefully injects the driver's code into the application code, this is an intentional decision as I prefer to have the functions as robust, and conforming to both the C# driver, and the HTTP underlying the driver, specifications over a simpler, incomplete, function.  
-In the same vein, none of the functions support the `<API name>HeaderProperties` that some of the C#'s driver's functions offer since these instances don't manipulate the request in any way, like the options may, and the information returned by those headers is mostly useful only in debug (which would be better suited over the UI and/or `arangosh`).
+The (sad) implication of this is that your **application** code will require `open`-ing ArangoDB-specific modules, for example:
 
-## Some functionality is missing? ##
+```fsharp
+// File: MyApp.fs
+module MyApp
 
-The official driver has an [implementation](https://github.com/ArangoDB-Community/arangodb-net-standard/tree/master/arangodb-net-standard) for **most** of the APIs listed on [ArangoDB's HTTP page](https://www.arangodb.com/docs/stable/http/).
+// Opening and setting up required application data...
+// Followed by opening the wrapper's `Document` namespace and its supporting ArangoDB modules.
+open Document
+open ArangoDBNetStandard.DocumentApi.Models
 
-Once an `ArangoDBClient` is created it has access to all those [APIs](https://arangodb-community.github.io/arangodb-net-standard/v1-1-0/html/ba0f435e-0803-bafd-7a3d-9963d8a82ad8.htm), manifested as the object's properties, via the usual "dot-into" mechanism (e.g. `dbClient.User`).
+// Application code...
+// Followed by calling the 'postDocumentAsync<'T>' method.
+// Notice that since it's a static member, we need to use the dot-notation with a fully-qualified class name.
+Document.postDocumentAsync<MyDocumentType>(collectionName, document, PostDocumentQuery(Overwrite = true, Silent = true))
+```
 
-Do note that some code "gymnastics" is required, especially when instantiating a class, to allow F# to call the driver's C# code.
+You'll need to consult the official driver's documentation to see what type of parameters each of the methods take, and what are each method's applicable properties.
 
-(On that note, PRs are welcome, thank you very much.)
+(You can checkout the `experiments` branch to see how I'd liked the API to behave, but couldn't figure out how to make it happen. Did I mention I take PRs?!)
 
-## The name? ##
+## Some functionality is missing ##
 
-(Tin)foil can be used to wrap materials. F#oil wraps .Net materials into something usable by F#. :smile:
+This wrapper provides **most** of the functionality provided by the official driver (which in turn offers **all** the functionality provided by ArangoDB itself).  
+I've opted to implement the functionality I've used most when learning to use the DB, leaving out the very remote functionality that's unlikely to ever be required.
+
+If some of the missing functionality **is** required, implementing it should be fairly easy: just follow the official driver's documentation to know what parameters to pass, and the wrapper's code as example how to implement the function.
+
+## Status ##
+
+Despite some of the functionality missing (see previous section), I now consider this wrapper complete, both in features and design.  
+Following the Semver protocol, this wrapper is now tagged `1.0.0` and will **not** receive any modification other than bug fixes, unless the official driver's code changes.
+
+## Contributing ##
+
+The usual way of doing FOSS applies:
+
+* Fork the repo.
+* Do your thing.
+* Send a PR.
+
+I don't have any strict coding standards per-se, other than using the latest *stable* version of `Fantomas`.  
+Just mimic the current code style and it'll be fine.
+
+## The name ##
+
+Foil is used to wrap materials.  
+By that token, F#oil wraps C# code into code usable from F#. :smile:

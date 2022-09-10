@@ -1,237 +1,147 @@
-module Documents
+namespace Documents
 
-open System
-open ArangoDBNetStandard.DocumentApi.Models
-open ArangoDBNetStandard.Serialization
 open ConnectionDetails
 
-let deleteDocumentByIdAsync documentId (deleteDocumentQueryOption: DeleteDocumentQuery option) =
-    let dcq =
-        match deleteDocumentQueryOption with
-        | Some dcq -> dcq
-        | None -> null
+type Documents =
+    static member deleteDocumentAsync(documentId, ?query, ?headers) =
+        let query = defaultArg query null
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .DeleteDocumentAsync(documentId, dcq)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .DeleteDocumentAsync(documentId, query, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let deleteDocumentByCollectionKeyAsync
-    collectionName
-    documentKey
-    (deleteDocumentQueryOption: DeleteDocumentQuery option)
-    =
-    let dcq =
-        match deleteDocumentQueryOption with
-        | Some dcq -> dcq
-        | None -> null
+    static member deleteDocumentAsync(collectionName, documentKey, ?query, ?headers) =
+        let query = defaultArg query null
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .DeleteDocumentAsync(collectionName, documentKey, dcq)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .DeleteDocumentAsync(collectionName, documentKey, query, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let deleteDocumentsAsync
-    collectionName
-    (documents: Collections.Generic.IList<string>)
-    (deleteDocumentsQueryOption: DeleteDocumentsQuery option)
-    =
-    let ddq =
-        match deleteDocumentsQueryOption with
-        | Some ddq -> ddq
-        | None -> null
+    static member deleteDocumentsAsync(collectionName, selectors, ?query, ?headers) =
+        let query = defaultArg query null
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .DeleteDocumentsAsync(collectionName, documents, ddq)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .DeleteDocumentsAsync(collectionName, selectors, query, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let getDocumentByIdAsync<'T> documentId =
-    db
-        .Document
-        .GetDocumentAsync<'T>(documentId)
-        .GetAwaiter()
-        .GetResult()
+    static member getDocumentAsync<'T>(documentId, ?headers) =
+        let headers = defaultArg headers null
 
-let getDocumentByCollectionKeyAsync<'T> collectionName documentKey =
-    db
-        .Document
-        .GetDocumentAsync<'T>(collectionName, documentKey)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .GetDocumentAsync<'T>(documentId, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let getDocumentsAsync<'T> collectionName documentsKeys =
-    db
-        .Document
-        .GetDocumentsAsync<'T>(collectionName, documentsKeys)
-        .GetAwaiter()
-        .GetResult()
+    static member getDocumentAsync<'T>(collectionName, documentKey, ?headers) =
+        let headers = defaultArg headers null
 
-let patchDocumentByIdAsync<'T, 'U>
-    documentId
-    (replaceDocument: 'T)
-    (patchDocumentQueryOption: PatchDocumentQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
-    =
-    let pdq =
-        match patchDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
+        db
+            .Document
+            .GetDocumentAsync<'T>(collectionName, documentKey, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+    static member getDocumentsAsync<'T>(collectionName, selectors, ?headers) =
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .PatchDocumentAsync(documentId, replaceDocument, pdq, aso)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .GetDocumentsAsync<'T>(collectionName, selectors, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let patchDocumentByCollectionKeyAsync<'T, 'U>
-    (collectionName: string)
-    (documentKey: string)
-    (replacementDocument: 'T)
-    (patchDocumentQueryOption: PatchDocumentQuery option)
-    =
-    let pdq =
-        match patchDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
+    static member patchDocumentAsync<'T, 'U>(documentId, (body: 'T), ?query, ?apiSerOpts, ?headers) =
+        let query = defaultArg query null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .PatchDocumentAsync(collectionName, documentKey, replacementDocument, pdq)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .PatchDocumentAsync<'T, 'U>(documentId, body, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let patchDocumentsAsync<'T>
-    collectionName
-    (documents: Collections.Generic.IList<'T>)
-    (patchDocumentQueryOption: PatchDocumentsQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
-    =
-    let pdq =
-        match patchDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
+    static member patchDocumentAsync<'T, 'U>(collectionName, documentKey, (body: 'T), ?query, ?headers) =
+        let query = defaultArg query null
+        let headers = defaultArg headers null
 
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+        db
+            .Document
+            .PatchDocumentAsync<'T, 'U>(collectionName, documentKey, body, query, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .Document
-        .PatchDocumentsAsync(collectionName, documents, pdq, aso)
-        .GetAwaiter()
-        .GetResult()
+    static member patchDocumentsAsync<'T, 'U>(collectionName, patches, ?query, ?apiSerOpts, ?headers) =
+        let headers = defaultArg headers null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let query = defaultArg query null
 
-let postDocumentAsync<'T>
-    collectionName
-    document
-    (createDocumentQueryOption: PostDocumentsQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
-    =
-    let pdq =
-        match createDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
+        db
+            .Document
+            .PatchDocumentsAsync<'T, 'U>(collectionName, patches, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+    static member postDocumentAsync<'T>(collectionName, (document: 'T), ?query, ?apiSerOpts, ?headers) =
+        let query = defaultArg query null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .PostDocumentAsync<'T>(collectionName, document, pdq, aso)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .PostDocumentAsync<'T>(collectionName, document, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let postDocumentsAsync<'T>
-    collectionName
-    (documents: Collections.Generic.IList<'T>)
-    (createDocumentQueryOption: PostDocumentsQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
-    =
-    let pdq =
-        match createDocumentQueryOption with
-        | Some pdq -> pdq
-        | None -> null
+    static member postDocumentsAsync<'T>(collectionName, documents, ?query, ?apiSerOpts, ?headers) =
+        let query = defaultArg query null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+        db
+            .Document
+            .PostDocumentsAsync<'T>(collectionName, documents, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    db
-        .Document
-        .PostDocumentsAsync<'T>(collectionName, documents, pdq, aso)
-        .GetAwaiter()
-        .GetResult()
+    static member putDocumentAsync<'T>(documentId, (doc: 'T), ?opts, ?apiSerOpts, ?headers) =
+        let opts = defaultArg opts null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-let putDocumentByIdAsync<'T>
-    documentId
-    (replaceDocument: 'T)
-    (replaceDocumentQueryOption: PutDocumentQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
-    =
-    let rdq =
-        match replaceDocumentQueryOption with
-        | Some rdq -> rdq
-        | None -> null
+        db
+            .Document
+            .PutDocumentAsync<'T>(documentId, doc, opts, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
+    static member putDocumentAsync<'T>(collectionName, documentKey, (doc: 'T), ?opts, ?headers) =
+        let opts = defaultArg opts null
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .PutDocumentAsync(documentId, replaceDocument, rdq, aso)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .PutDocumentAsync<'T>(collectionName, documentKey, doc, opts, headers)
+            .GetAwaiter()
+            .GetResult()
 
-let putDocumentByCollectionKeyAsync<'T>
-    collectionName
-    documentKey
-    (replacementDocument: 'T)
-    (replaceDocumentQueryOption: PutDocumentQuery option)
-    =
-    let rdq =
-        match replaceDocumentQueryOption with
-        | Some rdq -> rdq
-        | None -> null
+    static member putDocumentsAsync<'T>(collectionName, documents, ?query, ?apiSerOpts, ?headers) =
+        let query = defaultArg query null
+        let apiSerOpts = defaultArg apiSerOpts null
+        let headers = defaultArg headers null
 
-    db
-        .Document
-        .PutDocumentAsync(collectionName, documentKey, replacementDocument, rdq)
-        .GetAwaiter()
-        .GetResult()
-
-let putDocumentsAsync<'T>
-    collectionName
-    (documents: Collections.Generic.IList<'T>)
-    (replaceDocumentQueryOption: PutDocumentsQuery option)
-    (apiSerializationOption: ApiClientSerializationOptions option)
-    =
-    let rdq =
-        match replaceDocumentQueryOption with
-        | Some rdq -> rdq
-        | None -> null
-
-    let aso =
-        match apiSerializationOption with
-        | Some aso -> aso
-        | None -> null
-
-    db
-        .Document
-        .PutDocumentsAsync(collectionName, documents, rdq, aso)
-        .GetAwaiter()
-        .GetResult()
+        db
+            .Document
+            .PutDocumentsAsync<'T>(collectionName, documents, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
