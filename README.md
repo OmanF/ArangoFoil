@@ -39,8 +39,6 @@ Document.postDocumentAsync<MyDocumentType>(collectionName, document, PostDocumen
 
 You'll need to consult the official driver's documentation to see what type of parameters each of the methods take, and what are each method's applicable properties.
 
-(You can checkout the `experiments` branch to see how I'd liked the API to behave, but couldn't figure out how to make it happen. Did I mention I take PRs?!)
-
 ## Some functionality is missing ##
 
 This wrapper provides **most** of the functionality provided by the official driver (which in turn offers **all** the functionality provided by ArangoDB itself).  
