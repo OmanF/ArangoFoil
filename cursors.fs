@@ -10,18 +10,18 @@ type Cursors =
             .GetAwaiter()
             .GetResult()
 
-    static member postCursorAsync<'T>(postCursorBody, ?headers) =
+    static member postCursorAsync(postCursorBody, ?headers) =
         let headers = defaultArg headers null
 
         db
             .Cursor
-            .PostCursorAsync<'T>(postCursorBody, headers)
+            .PostCursorAsync(postCursorBody, headers)
             .GetAwaiter()
             .GetResult()
 
-    static member putCursorAsync<'T>(cursorId) =
+    static member putCursorAsync(cursorId) =
         db
             .Cursor
-            .PutCursorAsync<'T>(cursorId)
+            .PutCursorAsync(cursorId)
             .GetAwaiter()
             .GetResult()

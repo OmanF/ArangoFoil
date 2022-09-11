@@ -24,6 +24,30 @@ type Users =
             .GetAwaiter()
             .GetResult()
 
+    static member getAccessibleDatabasesAsync(username, ?query) =
+        let query = defaultArg query null
+
+        db
+            .User
+            .GetAccessibleDatabasesAsync(username, query)
+            .GetAwaiter()
+            .GetResult()
+
+    static member getCollectionAccessLevelAsync(username, dbName, collectionName) =
+        db
+            .User
+            .GetCollectionAccessLevelAsync(username, dbName, collectionName)
+            .GetAwaiter()
+            .GetResult()
+
+    static member getDatabaseAccessLevelAsync(username, dbName) =
+        db
+            .User
+            .GetDatabaseAccessLevelAsync(username, dbName)
+            .GetAwaiter()
+            .GetResult()
+
+
     static member getUserAsync(username) =
         db
             .User

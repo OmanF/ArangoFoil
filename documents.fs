@@ -33,21 +33,21 @@ type Documents =
             .GetAwaiter()
             .GetResult()
 
-    static member getDocumentAsync<'T>(documentId, ?headers) =
+    static member getDocumentAsync(documentId, ?headers) =
         let headers = defaultArg headers null
 
         db
             .Document
-            .GetDocumentAsync<'T>(documentId, headers)
+            .GetDocumentAsync(documentId, headers)
             .GetAwaiter()
             .GetResult()
 
-    static member getDocumentAsync<'T>(collectionName, documentKey, ?headers) =
+    static member getDocumentAsync(collectionName, documentKey, ?headers) =
         let headers = defaultArg headers null
 
         db
             .Document
-            .GetDocumentAsync<'T>(collectionName, documentKey, headers)
+            .GetDocumentAsync(collectionName, documentKey, headers)
             .GetAwaiter()
             .GetResult()
 
@@ -57,6 +57,24 @@ type Documents =
         db
             .Document
             .GetDocumentsAsync<'T>(collectionName, selectors, headers)
+            .GetAwaiter()
+            .GetResult()
+
+    static member headDocumentAsync(documentId, ?headers) =
+        let headers = defaultArg headers null
+
+        db
+            .Document
+            .HeadDocumentAsync(documentId, headers)
+            .GetAwaiter()
+            .GetResult()
+
+    static member headDocumentAsync(collectionName, documentKey, ?headers) =
+        let headers = defaultArg headers null
+
+        db
+            .Document
+            .HeadDocumentAsync(collectionName, documentKey, headers)
             .GetAwaiter()
             .GetResult()
 
@@ -103,14 +121,25 @@ type Documents =
             .GetAwaiter()
             .GetResult()
 
-    static member postDocumentsAsync<'T>(collectionName, documents, ?query, ?apiSerOpts, ?headers) =
+    static member postDocumentAsync<'T, 'U>(collectionName, (document: 'T), ?query, ?apiSerOpts, ?headers) =
+        let apiSerOpts = defaultArg apiSerOpts null
+        let query = defaultArg query null
+        let headers = defaultArg headers null
+
+        db
+            .Document
+            .PostDocumentAsync<'T, 'U>(collectionName, document, query, apiSerOpts, headers)
+            .GetAwaiter()
+            .GetResult()
+
+    static member postDocumentsAsync(collectionName, documents, ?query, ?apiSerOpts, ?headers) =
         let query = defaultArg query null
         let apiSerOpts = defaultArg apiSerOpts null
         let headers = defaultArg headers null
 
         db
             .Document
-            .PostDocumentsAsync<'T>(collectionName, documents, query, apiSerOpts, headers)
+            .PostDocumentsAsync(collectionName, documents, query, apiSerOpts, headers)
             .GetAwaiter()
             .GetResult()
 
@@ -135,13 +164,13 @@ type Documents =
             .GetAwaiter()
             .GetResult()
 
-    static member putDocumentsAsync<'T>(collectionName, documents, ?query, ?apiSerOpts, ?headers) =
+    static member putDocumentsAsync(collectionName, documents, ?query, ?apiSerOpts, ?headers) =
         let query = defaultArg query null
         let apiSerOpts = defaultArg apiSerOpts null
         let headers = defaultArg headers null
 
         db
             .Document
-            .PutDocumentsAsync<'T>(collectionName, documents, query, apiSerOpts, headers)
+            .PutDocumentsAsync(collectionName, documents, query, apiSerOpts, headers)
             .GetAwaiter()
             .GetResult()

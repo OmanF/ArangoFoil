@@ -126,49 +126,49 @@ type Graphs =
             .GetAwaiter()
             .GetResult()
 
-    static member patchEdgeAsync<'T, 'U>(graphName, documentId, (edge: 'T), ?query) =
+    static member patchEdgeAsync(graphName, documentId, edge, ?query) =
         let query = defaultArg query null
 
         db
             .Graph
-            .PatchEdgeAsync<'T, 'U>(graphName, documentId, edge, query)
+            .PatchEdgeAsync(graphName, documentId, edge, query)
             .GetAwaiter()
             .GetResult()
 
-    static member patchEdgeAsync<'T, 'U>(graphName, collectionName, edgeKey, (edge: 'T), ?query) =
+    static member patchEdgeAsync(graphName, collectionName, edgeKey, edge, ?query) =
         let query = defaultArg query null
 
         db
             .Graph
-            .PatchEdgeAsync<'T, 'U>(graphName, collectionName, edgeKey, edge, query)
+            .PatchEdgeAsync(graphName, collectionName, edgeKey, edge, query)
             .GetAwaiter()
             .GetResult()
 
-    static member patchVertexAsync<'T, 'U>(graphName, documentId, (body: 'T), ?query) =
+    static member patchVertexAsync(graphName, documentId, body, ?query) =
         let query = defaultArg query null
 
         db
             .Graph
-            .PatchVertexAsync<'T, 'U>(graphName, documentId, body, query)
+            .PatchVertexAsync(graphName, documentId, body, query)
             .GetAwaiter()
             .GetResult()
 
-    static member patchVertexKey<'T, 'U>(graphName, collectionName, vertexKey, (body: 'T), ?query) =
+    static member patchVertexKey(graphName, collectionName, vertexKey, body, ?query) =
         let query = defaultArg query null
 
         db
             .Graph
-            .PatchVertexAsync<'T, 'U>(graphName, collectionName, vertexKey, body, query)
+            .PatchVertexAsync(graphName, collectionName, vertexKey, body, query)
             .GetAwaiter()
             .GetResult()
 
-    static member postEdgeAsync<'T>(graphName, collectionName, (edge: 'T), ?query, ?apiSerOpts) =
+    static member postEdgeAsync(graphName, collectionName, edge, ?query, ?apiSerOpts) =
         let query = defaultArg query null
         let apiSerOpts = defaultArg apiSerOpts null
 
         db
             .Graph
-            .PostEdgeAsync<'T>(graphName, collectionName, edge, query, apiSerOpts)
+            .PostEdgeAsync(graphName, collectionName, edge, query, apiSerOpts)
             .GetAwaiter()
             .GetResult()
 
@@ -188,13 +188,13 @@ type Graphs =
             .GetAwaiter()
             .GetResult()
 
-    static member postVertexAsync<'T>(graphName, collectionName, (vertex: 'T), ?query, ?apiSerOpts) =
+    static member postVertexAsync(graphName, collectionName, vertex, ?query, ?apiSerOpts) =
         let query = defaultArg query null
         let apiSerOpts = defaultArg apiSerOpts null
 
         db
             .Graph
-            .PostVertexAsync<'T>(graphName, collectionName, vertex, query, apiSerOpts)
+            .PostVertexAsync(graphName, collectionName, vertex, query, apiSerOpts)
             .GetAwaiter()
             .GetResult()
 
@@ -205,21 +205,21 @@ type Graphs =
             .GetAwaiter()
             .GetResult()
 
-    static member putEdgeAsync<'T>(graphName, documentId, (edge: 'T), ?query) =
+    static member putEdgeAsync(graphName, documentId, edge, ?query) =
         let query = defaultArg query null
 
         db
             .Graph
-            .PutEdgeAsync<'T>(graphName, documentId, edge, query)
+            .PutEdgeAsync(graphName, documentId, edge, query)
             .GetAwaiter()
             .GetResult()
 
-    static member putEdgeAsync<'T>(graphName, collectionName, edgeKey, (edge: 'T), ?query) =
+    static member putEdgeAsync(graphName, collectionName, edgeKey, edge, ?query) =
         let query = defaultArg query null
 
         db
             .Graph
-            .PutEdgeAsync<'T>(graphName, collectionName, edgeKey, edge, query)
+            .PutEdgeAsync(graphName, collectionName, edgeKey, edge, query)
             .GetAwaiter()
             .GetResult()
 
@@ -232,20 +232,20 @@ type Graphs =
             .GetAwaiter()
             .GetResult()
 
-    static member putVertexAsync<'T>(graphName, doucmentId, (vertex: 'T), ?query) =
+    static member putVertexAsync(graphName, doucmentId, vertex, ?query) =
         let query = defaultArg query null
 
         db
             .Graph
-            .PutVertexAsync<'T>(graphName, doucmentId, vertex, query)
+            .PutVertexAsync(graphName, doucmentId, vertex, query)
             .GetAwaiter()
             .GetResult()
 
-    static member putVertexAsync<'T>(graphName, collectionName, key, (vertex: 'T), ?query) =
+    static member putVertexAsync(graphName, collectionName, key, vertex, ?query) =
         let query = defaultArg query null
 
         db
             .Graph
-            .PutVertexAsync<'T>(graphName, collectionName, key, vertex, query)
+            .PutVertexAsync(graphName, collectionName, key, vertex, query)
             .GetAwaiter()
             .GetResult()
