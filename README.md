@@ -5,14 +5,16 @@ Luckily, it's possible to provide a (thin) F# wrapper around that driver.
 
 ## Installation ##
 
-The easiest way is to build the project then reference the resulting `.dll` file.  
-Another way is to clone the files of this project to your own project (in the order they appear in this project's `.fsproj` file, of course) and reference them in your own project.  
-(I'm sorry, but it's not likely this will ever be made into a `Nuget` package).
+* The easiest way is to get the package from Nuget.  
+* Otherwise, build the project then reference the resulting `.dll` file.  
+* Last, you can clone the files of this project to your own project (in the order they appear in this project's `.fsproj` file, of course) and reference them in your own project.  
 
-Either way, **don't forget to add and reference this wrapper's core dependency** - `ArangoDBNetStandard`.  
+Either way, **don't forget to add and reference this wrapper's core dependency** - `ArangoDBNetStandard` (you get this for free when getting the package from Nuget).  
 This wrapper wraps the official driver's version 1.1.1.
 
 ## Usage ##
+
+First, use the `bindConnection` function from the `connectionDetails` module to create the connection object holding the relevant connection details. This same function is to be used when needing to switch database(s)/user(s).
 
 The names of each file/namespace correspond to the name of an official driver's API.  
 Within each namespace, the names of the **methods** match the corresponding driver API's methods, albeit in *camelCase* syntax (opposed to the official driver's PascalCase).
