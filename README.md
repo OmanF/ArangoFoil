@@ -9,49 +9,32 @@ Luckily, it's possible to provide a (thin) F# wrapper around that driver.
 * Otherwise, build the project then reference the resulting `.dll` file.  
 * Last, you can clone the files of this project to your own project (in the order they appear in this project's `.fsproj` file, of course) and reference them in your own project.  
 
-Either way, **don't forget to add and reference this wrapper's core dependency** - `ArangoDBNetStandard` (you get this for free when getting the package from Nuget).  
-This wrapper wraps the official driver's version 1.1.1.
+This wrapper wraps the official driver's version 1.3.0.
 
 ## Usage ##
 
-First, use the `bindConnection` function from the `connectionDetails` module to create the connection object holding the relevant connection details. This same function is to be used when needing to switch database(s)/user(s).
-
-The names of each file/namespace correspond to the name of an official driver's API.  
-Within each namespace, the names of the **methods** match the corresponding driver API's methods, albeit in *camelCase* syntax (opposed to the official driver's PascalCase).
-
-One caveat, however, is that some of the methods, mostly `POST`, `PUT` and `PATCH`, but not limited to those, require, or take as optional parameters, ArangoDB-specific objects.  
-For example, `Document`'s `postDocumentAsync<'T>` method takes an optional parameter, `query` (*among others*), of type `PostDocumentQuery` which is available in `ArangoDBNetStandard.DocumentApi.Models` module.
-
-The (sad) implication of this is that your **application** code will require `open`-ing ArangoDB-specific modules, for example:
-
-```fsharp
-// File: MyApp.fs
-module MyApp
-
-// Opening and setting up required application data...
-// Followed by opening the wrapper's `Document` namespace and its supporting ArangoDB modules.
-open Document
-open ArangoDBNetStandard.DocumentApi.Models
-
-// Application code...
-// Followed by calling the 'postDocumentAsync<'T>' method.
-// Notice that since it's a static member, we need to use the dot-notation with a fully-qualified class name.
-Document.postDocumentAsync<MyDocumentType>(collectionName, document, PostDocumentQuery(Overwrite = true, Silent = true))
-```
-
-You'll need to consult the official driver's documentation to see what type of parameters each of the methods take, and what are each method's applicable properties.
+***TODO*: Fill in here, in as much detail as I'm able to write without getting bored to death. I hate documenting stuff!**
 
 ## Some functionality is missing ##
 
 This wrapper provides **most** of the functionality provided by the official driver (which in turn offers **all** the functionality provided by ArangoDB itself).  
 I've opted to implement the functionality I've used most when learning to use the DB, leaving out the very remote functionality that's unlikely to ever be required.
 
-If some of the missing functionality **is** required, implementing it should be fairly easy: just follow the official driver's documentation to know what parameters to pass, and the wrapper's code as example how to implement the function.
+If some of the missing functionality **is** required, implementing it should be fairly easy: just follow the official driver's documentation to know what parameters to pass, and the wrapper's code as example how to implement the function.  
+(Of course, PRs are welcome!)
 
 ## Status ##
 
-Despite some of the functionality missing (see previous section), I now consider this wrapper complete, both in features and design.  
-Following the Semver protocol, this wrapper is now tagged `1.0.0` and will **not** receive any modification other than bug fixes, unless the official driver's code changes.
+When I first released this package as Nuget it was, for various reasons, all of which are my fault, lacking and unfunctional (except for a *very* specific workflow that was useful to me).  
+Since I was the only user of the package, and using it in the specific way that allowed it to work correctly, I didn't even know how badly broken the package was until a couple of weeks ago I tried using it as part of a side-project I'm working on where it failed. Miserably. As was expected, to be honest.
+
+This new release I'm dog fooding my own code as well as trying to get as many of the functions tested (either on the REPL or in above said side-project).  
+While I **still** can't guaruntee this version is more stable, and/or useful, than the previous release, I **can** say that "so far - so good".
+
+This version is `2.y.z` since, according to the SemVer protocol of version numbering, it poses a **huge, and breaking** refactoring of the previous code.  
+It's literally an entire different code, excpet for the ArangoDB API calls.
+
+I consider this release to be stable, useable (again, mostly by myself), and correct.
 
 ## Contributing ##
 
