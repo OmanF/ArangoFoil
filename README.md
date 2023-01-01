@@ -5,47 +5,56 @@ Luckily, it's possible to provide a (thin) F# wrapper around that driver.
 
 ## Installation ##
 
-* The easiest way is to get the package from Nuget.  
-* Otherwise, build the project then reference the resulting `.dll` file.  
-* Last, you can clone the files of this project to your own project (in the order they appear in this project's `.fsproj` file, of course) and reference them in your own project.  
+The easiest way is to get the package from Nuget.
 
-This wrapper wraps the official driver's version 1.3.0.
+At time of publishing, the wrapper depends on the official driver's version `1.3.0`.
 
 ## Usage ##
 
-***TODO*: Fill in here, in as much detail as I'm able to write without getting bored to death. I hate documenting stuff!**
+First instansiate `ArangoFoilClient`.  
+Once created, call the `bindBasicAuthConnection` method with appropriate arguments to bind the client object to a specific server/database/user combo.  
+(A version supporting JWT authentication isn't currently available).
 
-## Some functionality is missing ##
+___Note___:  
+ArangoDB only introduced `healthcheck` since version `3.10.0`, so when passing the `runHealthCheck` argument, only pass `true` if you know for a fact your instance of ArangoDB server supports it, or the healthcheck __will__ fail and abort the entire script.  
+(If unsure, just pass `false` which side steps the entire check, optimistically assuming the server and database are up).
 
-This wrapper provides **most** of the functionality provided by the official driver (which in turn offers **all** the functionality provided by ArangoDB itself).  
-I've opted to implement the functionality I've used most when learning to use the DB, leaving out the very remote functionality that's unlikely to ever be required.
+Once a connection has successfully been setup you can "dot into" the client object to see all available methods.
 
-If some of the missing functionality **is** required, implementing it should be fairly easy: just follow the official driver's documentation to know what parameters to pass, and the wrapper's code as example how to implement the function.  
-(Of course, PRs are welcome!)
+Names of methods correspond to the official driver's names with differences being using camel case instead of C#'s Pascal case and dropping the `...Async` that terminates all the official driver's methods' names, so, for example, the wrapper's `postDocument` will show up as `PostDocumentAsync` on the official documentation.
+
+Most method names are self-describing however consulting the official driver's documentation is __strongly advised__.  
+
+___Cavaet___:  
+Some of the methods take, either as optional, or mandatory, arguments, objects that are unique to ArangoDB driver: for example `postCursor` takes, as mandatory argument, an object of type `PostCursorBody`.
+
+As a result, your __application__ code needs to be able to instansiate those objects.
+
+For example, code using the `postCursor` method might look like:
+
+```fsharp
+module TestPostCursor
+
+open ArangoDBNetStandard.CursorApi.Models // The module containing `PostCursorBody` type
+...
+
+afc.postCursor(PostCursorBody(Query = "select name in names"))
+...
+```
 
 ## Status ##
 
-When I first released this package as Nuget it was, for various reasons, all of which are my fault, lacking and unfunctional (except for a *very* specific workflow that was useful to me).  
-Since I was the only user of the package, and using it in the specific way that allowed it to work correctly, I didn't even know how badly broken the package was until a couple of weeks ago I tried using it as part of a side-project I'm working on where it failed. Miserably. As was expected, to be honest.
-
-This new release I'm dog fooding my own code as well as trying to get as many of the functions tested (either on the REPL or in above said side-project).  
-While I **still** can't guaruntee this version is more stable, and/or useful, than the previous release, I **can** say that "so far - so good".
-
-This version is `2.y.z` since, according to the SemVer protocol of version numbering, it poses a **huge, and breaking** refactoring of the previous code.  
-It's literally an entire different code, excpet for the ArangoDB API calls.
-
-I consider this release to be stable, useable (again, mostly by myself), and correct.
+While I make __zero promises__ about the quality or functionality of this package I consider the release to be stable and correct.
 
 ## Contributing ##
 
-The usual way of doing FOSS applies:
+As per FOSS norms:
 
 * Fork the repo.
 * Do your thing.
 * Send a PR.
 
-I don't have any strict coding standards per-se, other than using the latest *stable* version of `Fantomas`.  
-Just mimic the current code style and it'll be fine.
+Only coding standard I ask is using the _latest stable_ `Fantomas` with _default settings_ to format the code.
 
 ## The name ##
 
