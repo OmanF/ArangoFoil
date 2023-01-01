@@ -21,7 +21,8 @@ ArangoDB only introduced `healthcheck` since version `3.10.0`, so when passing t
 
 Once a connection has successfully been setup you can "dot into" the client object to see all available methods.
 
-Names of methods correspond to the official driver's names with differences being using camel case instead of C#'s Pascal case and dropping the `...Async` that terminates all the official driver's methods' names, so, for example, the wrapper's `postDocument` will show up as `PostDocumentAsync` on the official documentation.
+Names of methods correspond to the official driver's names with differences being using camel case instead of C#'s Pascal case and dropping the `...Async` that terminates all the official driver's methods' names, so, for example, the wrapper's `postDocument` will show up as `PostDocumentAsync` on the official documentation.  
+A _minor_ note: due to F# strong type system, stronger than C#'s, some methods that don't take a generic parameter in the official driver (e.g. `PostCursorAsync`) require such a type in the wrapper version, so, continuing the example, the corresponding method in the wrapper is `postCursor<'T>`.
 
 Most method names are self-describing however consulting the official driver's documentation is __strongly advised__.  
 
