@@ -713,11 +713,11 @@ type ArangoFoilClient() =
     member this.deleteCursor(cursorId) =
         db.Cursor.DeleteCursorAsync(cursorId).GetAwaiter().GetResult()
 
-    member this.postCursor(postCursorBody, ?headers: CursorHeaderProperties) =
+    member this.postCursor<'T>(postCursorBody, ?headers: CursorHeaderProperties) =
         let headers = defaultArg headers null
 
-        db.Cursor.PostCursorAsync(postCursorBody, headers).GetAwaiter().GetResult()
+        db.Cursor.PostCursorAsync<'T>(postCursorBody, headers).GetAwaiter().GetResult()
 
-    member this.putCursor(cursorId) =
+    member this.putCursor<'T>(cursorId) =
         db.Cursor.PostAdvanceCursorAsync(cursorId).GetAwaiter().GetResult()
 // #endregion
