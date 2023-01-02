@@ -273,16 +273,16 @@ type ArangoFoilClient() =
             .GetAwaiter()
             .GetResult()
 
-    member this.getDocument(documentId, ?headers: DocumentHeaderProperties) =
+    member this.getDocument<'T>(documentId, ?headers: DocumentHeaderProperties) =
         let headers = defaultArg headers null
-        db.Document.GetDocumentAsync(documentId, headers).GetAwaiter().GetResult()
+        db.Document.GetDocumentAsync<'T>(documentId, headers).GetAwaiter().GetResult()
 
-    member this.getDocument(collectionName, documentKey, ?headers: DocumentHeaderProperties) =
+    member this.getDocument<'T>(collectionName, documentKey, ?headers: DocumentHeaderProperties) =
         let headers = defaultArg headers null
 
         db
             .Document
-            .GetDocumentAsync(collectionName, documentKey, headers)
+            .GetDocumentAsync<'T>(collectionName, documentKey, headers)
             .GetAwaiter()
             .GetResult()
 
@@ -737,5 +737,5 @@ type ArangoFoilClient() =
         db.Cursor.PostCursorAsync<'T>(postCursorBody, headers).GetAwaiter().GetResult()
 
     member this.putCursor<'T>(cursorId) =
-        db.Cursor.PostAdvanceCursorAsync(cursorId).GetAwaiter().GetResult()
+        db.Cursor.PostAdvanceCursorAsync<'T>(cursorId).GetAwaiter().GetResult()
 // #endregion
