@@ -6,8 +6,10 @@ open ArangoDBNetStandard
 open ArangoDBNetStandard.Transport.Http
 
 open ArangoDBNetStandard.UserApi.Models
+open ArangoDBNetStandard.DatabaseApi.Models
 open ArangoDBNetStandard.CollectionApi.Models
 open ArangoDBNetStandard.DocumentApi.Models
+open ArangoDBNetStandard.ViewApi.Models
 open ArangoDBNetStandard.GraphApi.Models
 open ArangoDBNetStandard.CursorApi.Models
 open ArangoDBNetStandard.Serialization
@@ -46,14 +48,14 @@ type ArangoFoilClient() =
     // `Users` API
     // -------------------------------------------
     // #region
-    member this.deleteCollectionAccessLevel(username, dbName, collectionName) =
+    member this.deleteCollectionAccessLevel(username: string, dbName: string, collectionName: string) =
         db
             .User
             .DeleteCollectionAccessLevelAsync(username, dbName, collectionName)
             .GetAwaiter()
             .GetResult()
 
-    member this.deleteDatabaseAccessLevel(username, dbName) =
+    member this.deleteDatabaseAccessLevel(username: string, dbName: string) =
         db
             .User
             .DeleteDatabaseAccessLevelAsync(username, dbName)
@@ -61,50 +63,56 @@ type ArangoFoilClient() =
             .GetResult()
 
 
-    member this.deleteUser(username) =
+    member this.deleteUser(username: string) =
         db.User.DeleteUserAsync(username).GetAwaiter().GetResult()
 
-    member this.getAccessibleDatabases(username, ?query: GetAccessibleDatabasesQuery) =
+    member this.getAccessibleDatabases(username: string, ?query: GetAccessibleDatabasesQuery) =
         let query = defaultArg query null
         db.User.GetAccessibleDatabasesAsync(username, query).GetAwaiter().GetResult()
 
-    member this.getCollectionAccessLevel(username, dbName, collectionName) =
+    member this.getCollectionAccessLevel(username: string, dbName: string, collectionName: string) =
         db
             .User
             .GetCollectionAccessLevelAsync(username, dbName, collectionName)
             .GetAwaiter()
             .GetResult()
 
-    member this.getDatabaseAccessLevel(username, dbName) =
+    member this.getDatabaseAccessLevel(username: string, dbName: string) =
         db.User.GetDatabaseAccessLevelAsync(username, dbName).GetAwaiter().GetResult()
 
-    member this.getUser(username) =
+    member this.getUser(username: string) =
         db.User.GetUserAsync(username).GetAwaiter().GetResult()
 
     member this.getUsers() =
         db.User.GetUsersAsync().GetAwaiter().GetResult()
 
-    member this.patchUser(username, body) =
+    member this.patchUser(username: string, body: PatchUserBody) =
         db.User.PatchUserAsync(username, body).GetAwaiter().GetResult()
 
-    member this.postUser(body) =
+    member this.postUser(body: PostUserBody) =
         db.User.PostUserAsync(body).GetAwaiter().GetResult()
 
-    member this.putCollectionAccessLevel(username, dbName, collectionName, body) =
+    member this.putCollectionAccessLevel
+        (
+            username: string,
+            dbName: string,
+            collectionName: string,
+            body: PutAccessLevelBody
+        ) =
         db
             .User
             .PutCollectionAccessLevelAsync(username, dbName, collectionName, body)
             .GetAwaiter()
             .GetResult()
 
-    member this.putDatabaseAccessLevel(username, dbName, body) =
+    member this.putDatabaseAccessLevel(username: string, dbName: string, body: PutAccessLevelBody) =
         db
             .User
             .PutDatabaseAccessLevelAsync(username, dbName, body)
             .GetAwaiter()
             .GetResult()
 
-    member this.putUser(username, body) =
+    member this.putUser(username: string, body: PutUserBody) =
         db.User.PutUserAsync(username, body).GetAwaiter().GetResult()
     // #endregion
 
@@ -123,7 +131,7 @@ type ArangoFoilClient() =
     member this.getUserDatabases() =
         db.Database.GetUserDatabasesAsync().GetAwaiter().GetResult()
 
-    member this.postDatabase(request) =
+    member this.postDatabase(request: PostDatabaseBody) =
         db.Database.PostDatabaseAsync(request).GetAwaiter().GetResult()
     // #endregion
 
@@ -174,11 +182,11 @@ type ArangoFoilClient() =
             .GetAwaiter()
             .GetResult()
 
-    member this.postCollection(body, ?options: PostCollectionQuery) =
+    member this.postCollection(body: PostCollectionBody, ?options: PostCollectionQuery) =
         let options = defaultArg options null
         db.Collection.PostCollectionAsync(body, options).GetAwaiter().GetResult()
 
-    member this.putCollectionProperty(collectionName, body) =
+    member this.putCollectionProperty(collectionName, body: PutCollectionPropertyBody) =
         db
             .Collection
             .PutCollectionPropertyAsync(collectionName, body)
@@ -192,7 +200,7 @@ type ArangoFoilClient() =
             .GetAwaiter()
             .GetResult()
 
-    member this.putDocumentShard(collectionName, body) =
+    member this.putDocumentShard(collectionName, body: Collections.Generic.Dictionary<string, obj>) =
         db
             .Collection
             .PutDocumentShardAsync(collectionName, body)
@@ -252,7 +260,7 @@ type ArangoFoilClient() =
     member this.deleteDocuments
         (
             collectionName,
-            selectors,
+            selectors: Collections.Generic.IList<string>,
             ?query: DeleteDocumentsQuery,
             ?headers: DocumentHeaderProperties
         ) =
@@ -278,7 +286,12 @@ type ArangoFoilClient() =
             .GetAwaiter()
             .GetResult()
 
-    member this.getDocuments<'T>(collectionName, selectors, ?headers: DocumentHeaderProperties) =
+    member this.getDocuments<'T>
+        (
+            collectionName,
+            selectors: Collections.Generic.IList<string>,
+            ?headers: DocumentHeaderProperties
+        ) =
         let headers = defaultArg headers null
 
         db
@@ -338,7 +351,7 @@ type ArangoFoilClient() =
     member this.patchDocuments<'T, 'U>
         (
             collectionName,
-            patches,
+            patches: Collections.Generic.IList<'T>,
             ?query: PatchDocumentsQuery,
             ?apiSerOpts: ApiClientSerializationOptions,
             ?headers: DocumentHeaderProperties
@@ -389,14 +402,21 @@ type ArangoFoilClient() =
             .GetAwaiter()
             .GetResult()
 
-    member this.postDocuments(collectionName, documents, ?query, ?apiSerOpts, ?headers) =
+    member this.postDocuments<'T>
+        (
+            collectionName,
+            documents: Collections.Generic.IList<'T>,
+            ?query: PostDocumentsQuery,
+            ?apiSerOpts: ApiClientSerializationOptions,
+            ?headers: DocumentHeaderProperties
+        ) =
         let query = defaultArg query null
         let apiSerOpts = defaultArg apiSerOpts null
         let headers = defaultArg headers null
 
         db
             .Document
-            .PostDocumentsAsync(collectionName, documents, query, apiSerOpts, headers)
+            .PostDocumentsAsync<'T>(collectionName, documents, query, apiSerOpts, headers)
             .GetAwaiter()
             .GetResult()
 
@@ -435,10 +455,10 @@ type ArangoFoilClient() =
             .GetAwaiter()
             .GetResult()
 
-    member this.putDocuments
+    member this.putDocuments<'T>
         (
             collectionName,
-            documents,
+            documents: Collections.Generic.IList<'T>,
             ?query: PutDocumentsQuery,
             ?apiSerOpts: ApiClientSerializationOptions,
             ?headers: DocumentHeaderProperties
@@ -449,7 +469,7 @@ type ArangoFoilClient() =
 
         db
             .Document
-            .PutDocumentsAsync(collectionName, documents, query, apiSerOpts, headers)
+            .PutDocumentsAsync<'T>(collectionName, documents, query, apiSerOpts, headers)
             .GetAwaiter()
             .GetResult()
     // #endregion
@@ -469,18 +489,16 @@ type ArangoFoilClient() =
     member this.getViewProperties(viewNameOrId) =
         db.View.GetViewPropertiesAsync(viewNameOrId).GetAwaiter().GetResult()
 
-    member this.patchViewProperties(viewNameOrId, ?body) =
-        let body = defaultArg body null
-
+    member this.patchViewProperties(viewNameOrId, body: ViewDetails) =
         db.View.PatchViewPropertiesAsync(viewNameOrId, body).GetAwaiter().GetResult()
 
-    member this.postCreateView(body) =
+    member this.postCreateView(body: ViewDetails) =
         db.View.PostCreateViewAsync(body).GetAwaiter().GetResult()
 
-    member this.putRenameView(viewName, body) =
+    member this.putRenameView(viewName, body: PutRenameViewBody) =
         db.View.PutRenameViewAsync(viewName, body).GetAwaiter().GetResult()
 
-    member this.putViewProperties(viewName, body) =
+    member this.putViewProperties(viewName, body: ViewDetails) =
         db.View.PutViewPropertiesAsync(viewName, body).GetAwaiter().GetResult()
     // #endregion
 
@@ -616,11 +634,11 @@ type ArangoFoilClient() =
             .GetAwaiter()
             .GetResult()
 
-    member this.postEdge
+    member this.postEdge<'T>
         (
             graphName,
             collectionName,
-            edge,
+            edge: 'T,
             ?query: PostEdgeQuery,
             ?apiSerOpts: ApiClientSerializationOptions
         ) =
@@ -633,19 +651,19 @@ type ArangoFoilClient() =
             .GetAwaiter()
             .GetResult()
 
-    member this.postEdgeDefinition(graphName, body) =
+    member this.postEdgeDefinition(graphName, body: PostEdgeDefinitionBody) =
         db.Graph.PostEdgeDefinitionAsync(graphName, body).GetAwaiter().GetResult()
 
-    member this.postGraph(postGraphBody, ?query: PostGraphQuery) =
+    member this.postGraph(postGraphBody: PostGraphBody, ?query: PostGraphQuery) =
         let query = defaultArg query null
 
         db.Graph.PostGraphAsync(postGraphBody, query).GetAwaiter().GetResult()
 
-    member this.postVertex
+    member this.postVertex<'T>
         (
             graphName,
             collectionName,
-            vertex,
+            vertex: 'T,
             ?query: PostVertexQuery,
             ?apiSerOpts: ApiClientSerializationOptions
         ) =
@@ -654,11 +672,11 @@ type ArangoFoilClient() =
 
         db
             .Graph
-            .PostVertexAsync(graphName, collectionName, vertex, query, apiSerOpts)
+            .PostVertexAsync<'T>(graphName, collectionName, vertex, query, apiSerOpts)
             .GetAwaiter()
             .GetResult()
 
-    member this.postVertexCollection(graphName, body) =
+    member this.postVertexCollection(graphName, body: PostVertexCollectionBody) =
         db.Graph.PostVertexCollectionAsync(graphName, body).GetAwaiter().GetResult()
 
     member this.putEdge<'T>(graphName, documentId, edge: 'T, ?query: PutEdgeQuery) =
@@ -666,7 +684,7 @@ type ArangoFoilClient() =
 
         db
             .Graph
-            .PutEdgeAsync(graphName, documentId, edge, query)
+            .PutEdgeAsync<'T>(graphName, documentId, edge, query)
             .GetAwaiter()
             .GetResult()
 
@@ -675,11 +693,11 @@ type ArangoFoilClient() =
 
         db
             .Graph
-            .PutEdgeAsync(graphName, collectionName, edgeKey, edge, query)
+            .PutEdgeAsync<'T>(graphName, collectionName, edgeKey, edge, query)
             .GetAwaiter()
             .GetResult()
 
-    member this.putEdgeDefinition(graphName, collectionName, body, ?query) =
+    member this.putEdgeDefinition(graphName, collectionName, body: PutEdgeDefinitionBody, ?query) =
         let query = defaultArg query null
 
         db
@@ -693,7 +711,7 @@ type ArangoFoilClient() =
 
         db
             .Graph
-            .PutVertexAsync(graphName, doucmentId, vertex, query)
+            .PutVertexAsync<'T>(graphName, doucmentId, vertex, query)
             .GetAwaiter()
             .GetResult()
 
@@ -702,7 +720,7 @@ type ArangoFoilClient() =
 
         db
             .Graph
-            .PutVertexAsync(graphName, collectionName, key, vertex, query)
+            .PutVertexAsync<'T>(graphName, collectionName, key, vertex, query)
             .GetAwaiter()
             .GetResult()
     // #endregion
@@ -713,7 +731,7 @@ type ArangoFoilClient() =
     member this.deleteCursor(cursorId) =
         db.Cursor.DeleteCursorAsync(cursorId).GetAwaiter().GetResult()
 
-    member this.postCursor<'T>(postCursorBody, ?headers: CursorHeaderProperties) =
+    member this.postCursor<'T>(postCursorBody: PostCursorBody, ?headers: CursorHeaderProperties) =
         let headers = defaultArg headers null
 
         db.Cursor.PostCursorAsync<'T>(postCursorBody, headers).GetAwaiter().GetResult()
