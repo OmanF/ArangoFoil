@@ -1,5 +1,6 @@
 module ArangoFoilClient
 
+// #region: Package importing
 open System
 open FsHttp
 open ArangoDBNetStandard
@@ -15,6 +16,7 @@ open ArangoDBNetStandard.CursorApi.Models
 open ArangoDBNetStandard.Serialization
 
 open type Transport.Http.HttpApiTransport
+// #endregion
 
 type ArangoFoilClient() =
     let mutable db =
@@ -45,9 +47,8 @@ type ArangoFoilClient() =
         else
             ()
 
-    // `Users` API
+    // #region: `Users` API
     // -------------------------------------------
-    // #region
     member this.deleteCollectionAccessLevel(username: string, dbName: string, collectionName: string) =
         db
             .User
@@ -116,9 +117,8 @@ type ArangoFoilClient() =
         db.User.PutUserAsync(username, body).GetAwaiter().GetResult()
     // #endregion
 
-    // `Databases` API
+    // #region: `Databases` API
     // -------------------------------------------
-    // #region
     member this.deleteDatabase(databaseName) =
         db.Database.DeleteDatabaseAsync(databaseName).GetAwaiter().GetResult()
 
@@ -135,9 +135,8 @@ type ArangoFoilClient() =
         db.Database.PostDatabaseAsync(request).GetAwaiter().GetResult()
     // #endregion
 
-    // `Collections` API
+    // #region: `Collections` API
     // -------------------------------------------
-    // #region
     member this.deleteCollection(collectionName) =
         db.Collection.DeleteCollectionAsync(collectionName).GetAwaiter().GetResult()
 
@@ -217,7 +216,7 @@ type ArangoFoilClient() =
     member this.putRecalculateCount(collectionName) =
         db.Collection.PutRecalculateCountAsync(collectionName).GetAwaiter().GetResult()
 
-    member this.renameCollection(collectionName, body) =
+    member this.renameCollection(collectionName, body: RenameCollectionBody) =
         db
             .Collection
             .RenameCollectionAsync(collectionName, body)
@@ -228,9 +227,8 @@ type ArangoFoilClient() =
         db.Collection.TruncateCollectionAsync(collectionName).GetAwaiter().GetResult()
     // #endregion
 
-    // `Documents` API
+    // #region: `Documents` API
     // -------------------------------------------
-    // #region
     member this.deleteDocument(documentId, ?query: DeleteDocumentQuery, ?headers: DocumentHeaderProperties) =
         let query = defaultArg query null
         let headers = defaultArg headers null
@@ -474,9 +472,8 @@ type ArangoFoilClient() =
             .GetResult()
     // #endregion
 
-    // `Views` API
+    // #region: `Views` API
     // -------------------------------------------
-    // #region
     member this.deleteView(viewNameOrId) =
         db.View.DeleteViewAsync(viewNameOrId).GetAwaiter().GetResult()
 
@@ -502,9 +499,8 @@ type ArangoFoilClient() =
         db.View.PutViewPropertiesAsync(viewName, body).GetAwaiter().GetResult()
     // #endregion
 
-    // `Graphs` API
+    // #region: `Graphs` API
     // -------------------------------------------
-    // #region
     member this.deleteEdge(graphName, documentId, ?query: DeleteEdgeQuery) =
         let query = defaultArg query null
         db.Graph.DeleteEdgeAsync(graphName, documentId, query).GetAwaiter().GetResult()
@@ -725,9 +721,8 @@ type ArangoFoilClient() =
             .GetResult()
     // #endregion
 
-    // `Cursors` API
+    // #region: `Cursors` API
     // -------------------------------------------
-    // #region
     member this.deleteCursor(cursorId) =
         db.Cursor.DeleteCursorAsync(cursorId).GetAwaiter().GetResult()
 

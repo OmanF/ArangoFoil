@@ -39,7 +39,7 @@ module TestPostCursor
 open ArangoDBNetStandard.CursorApi.Models // The module containing `PostCursorBody` type
 ...
 
-afc.postCursor(PostCursorBody(Query = "select name in names"))
+afc.postCursor(PostCursorBody(Query = "SELECT itr IN iterators RETURN itr"))
 ...
 ```
 
