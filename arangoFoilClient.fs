@@ -726,11 +726,23 @@ type ArangoFoilClient() =
     member this.deleteCursor(cursorId) =
         db.Cursor.DeleteCursorAsync(cursorId).GetAwaiter().GetResult()
 
-    member this.postCursor<'T>(postCursorBody: PostCursorBody, ?headers: CursorHeaderProperties) =
+    member this.postCursorGeneric<'T>(postCursorBody: PostCursorBody, ?headers: CursorHeaderProperties) =
         let headers = defaultArg headers null
 
         db.Cursor.PostCursorAsync<'T>(postCursorBody, headers).GetAwaiter().GetResult()
 
-    member this.putCursor<'T>(cursorId) =
+    // The method name is generic, but the call site isn't resulting in an `obj` type output
+    // Contraty to the "full generic" method that return an output of type `'T`, thus constaining the output, acting as a "type-as-a-schema"
+    member this.postCursor<'T>(postCursorBody: PostCursorBody, ?headers: CursorHeaderProperties) =
+        let headers = defaultArg headers null
+
+        db.Cursor.PostCursorAsync(postCursorBody, headers).GetAwaiter().GetResult()
+
+    member this.putCursorGeneric<'T>(cursorId) =
         db.Cursor.PostAdvanceCursorAsync<'T>(cursorId).GetAwaiter().GetResult()
+
+    // The method name is generic, but the call site isn't resulting in an `obj` type output
+    // Contraty to the "full generic" method that return an output of type `'T`, thus constaining the output, acting as a "type-as-a-schema"
+    member this.putCursor<'T>(cursorId) =
+        db.Cursor.PostAdvanceCursorAsync(cursorId).GetAwaiter().GetResult()
 // #endregion

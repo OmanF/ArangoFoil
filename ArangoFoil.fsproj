@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net7.0;net6.0;netstandard2.1;netstandard2.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Version>2.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="arangoFoilClient.fs" />
